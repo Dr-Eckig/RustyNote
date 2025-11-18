@@ -1,0 +1,30 @@
+.tooltip {
+  @extend .dropdown;
+}
+
+.tooltip-tigger {
+  @extend .dropdown-trigger !optional;
+}
+
+.tooltip-container {
+  @extend .dropdown-menu;
+  display: none;
+}
+
+.tooltip-content {
+  @extend .dropdown-content;
+  width: max-content;
+  max-width: 260px;
+}
+
+.tooltip-item {
+  @extend .dropdown-item;
+}
+
+.tooltip:hover .tooltip-container {
+  display: flex;
+}
+
+.tooltip.is-right .tooltip-container {
+  justify-content: end;
+}

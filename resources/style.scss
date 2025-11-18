@@ -1,0 +1,33 @@
+@use "bulma/sass" with (
+  $primary: #EE5C13,
+  $danger: #c1121f,
+  $grey-darker: #303030,
+  $black-bis: #181818,
+  $black-ter: #212121,
+);
+
+@import "./fontawesome/scss/fontawesome.scss";
+@import "./fontawesome/scss/brands.scss";
+@import "./fontawesome/scss/solid.scss";
+@import "./fontawesome/scss/regular.scss";
+
+@import "./mobile.scss";
+@import "./scrollbar.scss";
+@import "./tooltip.scss";
+@import "./theme.scss";
+
+@import "./utility.scss";
+
+.modal-card {
+  width: 100% !important;
+}
+
+.modal-card-foot {
+  display: block;
+}
+
+.with-cropped-images img {
+    max-height: 30px; 
+    width: auto;
+    object-fit: contain; 
+}

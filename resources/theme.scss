@@ -1,0 +1,44 @@
+[data-theme="dark"] .page-background-color {
+  background-color: var(--bulma-black-ter);
+}
+
+.page-background-color {
+  background-color: var(--bulma-light);
+}
+
+[data-theme="light"] .has-shadow-bottom {
+  box-shadow: 0 4px 6px -1px var(--bulma-grey-lighter);
+}
+
+[data-theme="dark"] .has-shadow-bottom {
+  border-bottom: 1px solid var(--bulma-grey-dark);
+}
+
+[data-theme="dark"] .card, [data-theme="dark"] .textarea, [data-theme="dark"] .input, [data-theme="dark"] .modal-card-head, [data-theme="dark"] .modal-card-foot {
+  background-color: var(--bulma-black-bis);
+  box-shadow: none;
+  border: none;
+}
+
+[data-theme="dark"] .dropdown-content, [data-theme="dark"] .select select {
+    background-color: var(--bulma-black-bis);
+    box-shadow: none;
+    border: var(--bulma-grey-dark) 1px solid;
+}
+
+.header {
+    background-color: var(--bulma-white);
+}
+
+[data-theme="dark"] .header {
+    background-color: var(--bulma-black-bis);
+}
+
+[data-theme="dark"] .modal-card-body {
+  background-color: var(--bulma-black-ter);
+}
+
+[data-theme="dark"] .is-white, [data-theme="dark"] .is-light {
+  background-color: var(--bulma-grey-darker) !important;
+  color: var(--bulma-text) !important;
+}

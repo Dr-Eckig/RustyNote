@@ -1,0 +1,23 @@
+.sidebar {
+    height: 100%;
+    width: 50px;
+    transform: scaleX(0); 
+    transform-origin: left; 
+    transition: transform 0.3s ease; 
+    overflow-y: auto;
+}
+
+.sidebar.is-active {
+    transform: scaleX(1);
+}
+
+@media (max-width: 768px) {
+    .editor {
+        transition: margin-left 0.25s ease;
+        margin-left: -50px;
+    }
+
+    .editor.has-sidebar {
+        margin-left: 0;
+    }
+}

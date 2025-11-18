@@ -1,0 +1,26 @@
+::-webkit-scrollbar {
+ width: 6px;
+ height: 6px;
+}
+
+::-webkit-scrollbar-track {
+ background: var(--bulma-grey-lighter);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+ background: var(--bulma-grey-dark);
+}
+
+::-webkit-scrollbar-thumb {
+ background-color: var(--bulma-grey-dark);
+ border-radius: 6px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+ background-color: var(--bulma-grey-lighter);
+ border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+ background-color: var(--bulma-primary);
+}
