@@ -1,35 +1,79 @@
-use leptos::prelude::*;
-use leptos_use::use_document;
+use std::{fmt, str::FromStr};
 
-use crate::{api::local_storage::use_persistent_signal, components::{Color, Size, button::Button, icons::Icon}};
+use leptos::prelude::*;
+use leptos_use::{use_document, use_preferred_dark};
+
+use crate::{api::local_storage::use_persistent_signal, components::{icons::Icon, select::Select}};
+
+#[derive(PartialEq, Clone, Debug, Default)]
+pub enum Theme {
+    Light,
+    Dark,
+    #[default]
+    System
+}
+
+impl fmt::Display for Theme {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", match self {
+            Theme::Light => "Light",
+            Theme::Dark => "Dark",
+            Theme::System => "System",
+        })
+    }
+}
+
+impl FromStr for Theme {
+    type Err = (); 
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "light" => Ok(Theme::Light),
+            "dark" => Ok(Theme::Dark),
+            "system" => Ok(Theme::System),
+            _ => Err(()),
+        }
+    }
+}
 
 #[component] 
-pub fn ThemeButton(
-    #[prop(into, default=Signal::from(false))] show_text: Signal<bool>,
-    #[prop(default=false)] fullsize_button: bool
+pub fn ThemeSelect(
 ) -> impl IntoView {
 
-    let is_dark_theme = use_persistent_signal(String::from("theme"));
+    let theme: RwSignal<Theme> = use_persistent_signal(String::from("theme"));
+    let dark_preferred = use_preferred_dark();
 
-    Effect::new(move ||{
-        let is_dark_theme = is_dark_theme.get();
+    Effect::new(move || {
+        let theme = theme.get();
 
-        let theme = if is_dark_theme { "dark" } else { "light" };
+        let is_dark = match theme {
+            Theme::Light => false,
+            Theme::Dark => true,
+            Theme::System => dark_preferred.get(),
+        };
+
+        let data_theme = if is_dark { "dark" } else { "light" };
         let document = use_document();
         let html = document.document_element().unwrap();
-        html.set_attribute("data-theme", theme).unwrap();
+        html.set_attribute("data-theme", data_theme).unwrap();
+    });
+
+    let icon = Signal::derive(move || {
+        match theme.get() {
+            Theme::Light => Icon::Sun,
+            Theme::Dark => Icon::Moon,
+            Theme::System => if dark_preferred.get() { Icon::Moon } else { Icon::Sun },
+        }
     });
 
     view! {
-        <Button
-            text=Signal::derive(move || if show_text.get() { Some(String::from("Switch Theme")) } else { None })
-            icon=Signal::derive(move || if is_dark_theme.get() { Icon::Sun } else { Icon::Moon }) 
-            color=Color::Transparent
-            size=Size::Normal
-            is_rounded=true
-            has_smaller_padding=true
-            is_full_size=fullsize_button
-            on_click=move || is_dark_theme.set(!is_dark_theme.get())
+        <Select 
+            icon
+            options=vec![String::from("Light"), String::from("Dark"), String::from("System")] 
+            prop_value=Signal::derive(move || theme.get().to_string())
+            on_change=move |value: String| {
+                theme.set(value.parse().unwrap());
+            }
         />
     }
 }

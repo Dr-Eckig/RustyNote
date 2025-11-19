@@ -4,7 +4,7 @@ use crate::components::icons::Icon;
 #[component]
 pub fn Select(
     options: Vec<String>,
-    #[prop(optional)] icon: Option<Icon>,
+    #[prop(into, optional)] icon: Option<Signal<Icon>>,
     #[prop(into)] prop_value: Signal<String>,
     on_change: impl Fn(String) + 'static,
 ) -> impl IntoView {
@@ -31,10 +31,10 @@ pub fn Select(
                 </select>
             </div>
             {
-                icon.map(|icon| {
+                icon.map(|icon| { move || 
                     view! {
                         <span class="icon is-left">
-                            <i class=icon.as_fontawesome() />
+                            <i class=icon.get().as_fontawesome() />
                         </span>
                     }
                 })

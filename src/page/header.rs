@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use leptos_use::{UseClipboardReturn, use_clipboard, use_media_query};
 
 use crate::api::download::download_file;
-use crate::components::theme::ThemeButton;
+use crate::components::theme::ThemeSelect;
 use crate::components::{Color, HelpModal, State};
 use crate::components::logo::Logo;
 use crate::components::select::Select;
@@ -124,9 +124,9 @@ fn SettingsButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>,) -> im
 				}
 			/>
 			<div class="px-1"/>
-			<HelpModal />
+			<ThemeSelect />
 			<div class="px-1"/>
-			<ThemeButton />
+			<HelpModal />
 		</div>
 
 		<div class="is-flex is-align-items-center is-hidden-desktop">
@@ -143,11 +143,11 @@ fn SettingsButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>,) -> im
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
-					<HelpModal show_text=true fullsize_button=true />
+					<ThemeSelect />
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
-					<ThemeButton show_text=true fullsize_button=true />
+					<HelpModal show_text=true fullsize_button=true />
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
