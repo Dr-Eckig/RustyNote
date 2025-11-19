@@ -23,7 +23,7 @@ where F: Fn() + 'static {
     };
 
     let button_class = move || format!(
-        "button {} {} {} {} {} m-0", 
+        "button {} {} {} {} {}", 
         color().to_class(), 
         size.to_class(), 
         state.unwrap_or_else(|| Signal::from(State::Normal)).read().to_class(),
@@ -39,7 +39,7 @@ where F: Fn() + 'static {
             {
                 icon.map(|icon_signal| {
                     view! { 
-                        <span class="icon" class:m-0=move || text.get().is_none() class:pr-2=move || text.get().is_some()>
+                        <span class="icon" class:m-0=move || text.get().is_none() class:px-2=move || text.get().is_some()>
                             <i class=move || icon_signal.get().as_fontawesome() />
                         </span> 
                     }
