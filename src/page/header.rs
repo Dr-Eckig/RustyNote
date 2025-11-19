@@ -143,11 +143,11 @@ fn SettingsButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>,) -> im
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
-					<HelpModal show_text=true />
+					<HelpModal show_text=true fullsize_button=true />
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
-					<ThemeButton show_text=true />
+					<ThemeButton show_text=true fullsize_button=true />
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
@@ -157,6 +157,7 @@ fn SettingsButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>,) -> im
 						color=Color::Transparent
 						state=Signal::derive(move || if is_supported.get() { State::Normal } else { State::Disabled })
 						has_smaller_padding=true
+						is_full_size=true
 						on_click=move || copy_to_clipboard()
 					/>
 				</div>
@@ -167,6 +168,7 @@ fn SettingsButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>,) -> im
 						icon=Icon::Download 
 						color=Color::Transparent
 						has_smaller_padding=true
+						is_full_size=true
 						on_click=move || download_markdown()
 					/>
 				</div>
@@ -177,6 +179,7 @@ fn SettingsButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>,) -> im
 						icon=Icon::Delete 
 						color=Color::Transparent
 						has_smaller_padding=true
+						is_full_size=true
 						on_click=move || markdown.set(String::new())
 					/>
 				</div>

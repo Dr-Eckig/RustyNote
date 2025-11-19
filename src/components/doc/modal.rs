@@ -6,6 +6,7 @@ use crate::components::{Color, Size, button::Button, doc::{commonmark::CommonMar
 #[component]
 pub fn HelpModal(
     #[prop(into, default=Signal::from(false))] show_text: Signal<bool>,
+    #[prop(default=false)] fullsize_button: bool,
 ) -> impl IntoView {
 
     let active_tab = RwSignal::new(0);
@@ -22,9 +23,10 @@ pub fn HelpModal(
             icon=Icon::Help
             color=Color::Transparent
             size=Size::Normal
-            on_click=move || modal_visible.set(true)
             is_rounded=true
             has_smaller_padding=true
+            is_full_size=fullsize_button
+            on_click=move || modal_visible.set(true)
         />
         <div class="modal" class:is-active=move || modal_visible.get()>
             <div class="modal-background" />

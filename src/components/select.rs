@@ -11,8 +11,9 @@ pub fn Select(
     
     view! {
         <div class="control" class:has-icons-left=move || icon.is_some()>
-            <div class="select">
+            <div class="select is-full-size">
                 <select
+                    class="is-full-size"
                     prop:value=move || prop_value.get()
                     on:change=move |ev| {
                         on_change(event_target_value(&ev));

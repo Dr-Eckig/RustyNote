@@ -10,8 +10,9 @@ pub fn Button<F>(
     #[prop(into, optional)] color: Option<Signal<Color>>,
     #[prop(default = Size::Normal)] size: Size,
     #[prop(into, optional)] state: Option<Signal<State>>,
-    #[prop(optional)] is_rounded: bool,
-    #[prop(optional)] has_smaller_padding: bool,
+    #[prop(into, default=Signal::from(false))] is_rounded: Signal<bool>,
+    #[prop(into, default=Signal::from(false))] has_smaller_padding: Signal<bool>,
+    #[prop(into, default=Signal::from(false))] is_full_size: Signal<bool>,
     on_click: F,
 ) -> impl IntoView  
 where F: Fn() + 'static {
@@ -23,12 +24,13 @@ where F: Fn() + 'static {
     };
 
     let button_class = move || format!(
-        "button {} {} {} {} {}", 
+        "button {} {} {} {} {} {}", 
         color().to_class(), 
         size.to_class(), 
         state.unwrap_or_else(|| Signal::from(State::Normal)).read().to_class(),
-        if is_rounded { "is-rounded" } else { "" },
-        if has_smaller_padding { "px-2" } else { "" },
+        if is_rounded.get() { "is-rounded" } else { "" },
+        if has_smaller_padding.get() { "px-2" } else { "" },
+        if is_full_size.get() { "is-full-size" } else { "" },
     );
 
     view! {
