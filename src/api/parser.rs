@@ -68,24 +68,14 @@ fn markdown_options() -> ComrakOptions<'static> {
             table: true,
             autolink: true,
             tasklist: true,
-            footnotes: true,
-            description_lists: true,
-            multiline_block_quotes: true,
-            alerts: true,
-            math_dollars: true,
-            math_code: true,
-            underline: true,
-            subscript: true,
-            cjk_friendly_emphasis: true,
+            tagfilter: true,
             ..Default::default()
         },
         parse: ParseOptions {
-            smart: true,
             ..Default::default()
         },
         render: RenderOptions {
             github_pre_lang: true,
-            unsafe_: true,
             gfm_quirks: true,
             ..Default::default()
         },
