@@ -20,10 +20,11 @@ use crate::api::markdown_formatter::textarea::{Selection, get_current_selection,
 /// // Requires a browser environment with a textarea element.
 /// handle_enter_for_lists();
 /// ```
-pub fn handle_enter_for_lists() {
+pub fn handle_enter_for_lists() -> String {
     let selection = get_current_selection();
     let (new_text, new_cursor_position) = handle_enter_with_selection(selection);
-    set_cursor(new_text, new_cursor_position as u32, new_cursor_position as u32);
+    set_cursor(new_text.clone(), new_cursor_position as u32, new_cursor_position as u32);
+    new_text
 }
 
 fn handle_enter_with_selection(selection: Selection) -> (String, usize) {

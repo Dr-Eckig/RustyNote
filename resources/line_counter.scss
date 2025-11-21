@@ -1,0 +1,15 @@
+.line-counter {
+    height: 100%; 
+    overflow: hidden; 
+    min-width: 27px;
+}
+
+[data-theme="dark"] .line-counter-text {
+    @extend .has-text-grey;
+}
+
+.line-counter-text {
+    @extend .is-family-monospace;
+    @extend .has-text-right;
+    @extend .has-text-grey-light;
+}
