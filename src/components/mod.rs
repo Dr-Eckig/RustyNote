@@ -8,6 +8,7 @@ pub mod tabs;
 pub mod theme;
 pub mod dropdown;
 pub mod mobile;
+pub mod toggle;
 mod doc;
 
 pub use doc::modal::HelpModal;

@@ -1,6 +1,7 @@
 @use "bulma/sass" with (
   $primary: #EE5C13,
   $danger: #c1121f,
+  $grey-lighter: #DFE2E7,
   $grey-darker: #303030,
   $black-bis: #181818,
   $black-ter: #212121,
@@ -15,6 +16,7 @@
 @import "./scrollbar.scss";
 @import "./tooltip.scss";
 @import "./theme.scss";
+@import "./toggle.scss";
 
 @import "./utility.scss";
 
