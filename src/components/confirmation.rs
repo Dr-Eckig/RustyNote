@@ -31,10 +31,10 @@ pub fn Confirmation(
                     <div class="dropdown-item">
                         { confirmation_text }
                     </div>
-                    <div class="is-flex dropdown-item is-justify-content-space-evenly is-align-items-center">
+                    <div class="is-flex dropdown-item is-justify-content-space-between is-align-items-center">
                         <Button
-                            text="Yes"
-                            icon=Icon::Check 
+                            text="Delete"
+                            icon=Icon::Delete 
                             size=Size::Small 
                             color=Color::Danger
                             on_click=move || {
