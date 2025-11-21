@@ -1,13 +1,25 @@
+// Light
+[data-theme="light"] .has-shadow-bottom {
+  box-shadow: 0 4px 6px -1px var(--bulma-grey-lighter);
+}
+
+[data-theme="light"] .card, [data-theme="light"] .textarea {
+  box-shadow: none;
+  border: none;
+}
+
+[data-theme="light"] .select select {
+  border: var(--bulma-grey-lighter) 1px solid;
+  box-shadow: none;
+}
+
+// Dark
 [data-theme="dark"] .page-background-color {
   background-color: var(--bulma-black-ter);
 }
 
 .page-background-color {
   background-color: var(--bulma-light);
-}
-
-[data-theme="light"] .has-shadow-bottom {
-  box-shadow: 0 4px 6px -1px var(--bulma-grey-lighter);
 }
 
 [data-theme="dark"] .has-shadow-bottom {
