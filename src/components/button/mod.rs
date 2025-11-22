@@ -3,6 +3,7 @@ use leptos::prelude::*;
 pub mod copy;
 pub mod delete;
 pub mod download;
+pub mod format_tables;
 
 use crate::components::icons::Icon;
 use crate::components::{Color, Size, State};

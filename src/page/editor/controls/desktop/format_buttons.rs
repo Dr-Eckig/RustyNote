@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::{api::{markdown_formatter::format::TextFormattingType, parser::Dialect}, components::{Color, Size, State, button::Button, icons::Icon, tooltip::Tooltip}};
+use crate::{api::{markdown_formatter::format::TextFormattingType, parser::Dialect}, components::{Color, Size, State, button::{Button, format_tables::FormatTablesButton}, icons::Icon, tooltip::{Tooltip, TooltipDirection}}};
 
 fn tooltip(tip: String, parser: Dialect) -> String {
     if let Dialect::Common = parser {
@@ -25,7 +25,7 @@ pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>) ->
     let color = Color::White;
 
     view! {
-        <div class="is-flex is-justify-content-space-between" style="gap: 0.5rem">
+        <div class="is-flex" style="gap: 0.5rem">
             <Tooltip text="# Heading">
                 <Button
                     icon=Icon::Heading
@@ -39,6 +39,7 @@ pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>) ->
             <FormatBlocksButtons markdown color size />
             <FormatUrlButtons markdown color size />
             <FormatStructureButtons markdown parser color size disable_github_features/> 
+            <FormatTablesButton markdown tooltip_direction=TooltipDirection::Left />
         </div>
     }
 }
@@ -70,15 +71,6 @@ fn FormatInlineButtons(
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "_", suffix: "_" }.apply_text_formatting())
                 />
             </Tooltip>
-            // <Tooltip text=Signal::derive(move || tooltip(String::from("<ins> Underline </ins>"), parser.get()))>
-            //     <Button
-            //         icon=Icon::Underline
-            //         color
-            //         state=disable_github_features
-            //         size
-            //         on_click=move || markdown.set(TextFormattingType::Inline { prefix: "<ins>", suffix: "</ins>" }.apply_text_formatting())
-            //     />
-            // </Tooltip>
             <Tooltip text=Signal::derive(move || tooltip(String::from("~~CrossOut~~"), parser.get()))>
                 <Button
                     icon=Icon::CrossOut
@@ -88,24 +80,6 @@ fn FormatInlineButtons(
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "~~", suffix: "~~" }.apply_text_formatting())
                 />
             </Tooltip>
-            // <Tooltip text=Signal::derive(move || tooltip(String::from("<sub> Subscript </sub>"), parser.get()))>
-            //     <Button
-            //         icon=Icon::Subscript
-            //         color
-            //         state=disable_github_features
-            //         size
-            //         on_click=move || markdown.set(TextFormattingType::Inline { prefix: "<sub>", suffix: "</sub>" }.apply_text_formatting())
-            //     />
-            // </Tooltip>
-            // <Tooltip text=Signal::derive(move || tooltip(String::from("<sup> Superscript </sup>"), parser.get()))>
-            //     <Button
-            //         icon=Icon::Superscript
-            //         color
-            //         state=disable_github_features
-            //         size
-            //         on_click=move || markdown.set(TextFormattingType::Inline { prefix: "<sup>", suffix: "</sup>" }.apply_text_formatting())
-            //     />
-            // </Tooltip>
             <Tooltip text="`Inline Code`">
                 <Button
                     icon=Icon::Monospace

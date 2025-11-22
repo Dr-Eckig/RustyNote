@@ -23,6 +23,7 @@ impl TooltipDirection {
 pub fn Tooltip(
     #[prop(into)] text: Signal<String>,
     #[prop(into, default=Signal::from(TooltipDirection::Left))] direction: Signal<TooltipDirection>,
+    #[prop(default=Signal::from(false))] is_hidden: Signal<bool>,
     children: Children
 ) -> impl IntoView {
 
@@ -31,7 +32,7 @@ pub fn Tooltip(
             <div class="tooltip-trigger">
                 { children() }
             </div>
-            <div class="tooltip-container">
+            <div class="tooltip-container" style=move || if is_hidden.get() { "display: none" } else { "" }>
                 <div class="tooltip-content p-0">
                     <div class="tooltip-item is-size-7 p-2">
                         { text }

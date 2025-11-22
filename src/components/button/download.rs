@@ -13,20 +13,13 @@ pub fn DownloadButton(
     };
     
     view! {
-        <DesktopDownloadButton 
-            markdown 
-            download_markdown=download_markdown.clone() 
-        />
-        <TouchDeviceDownloadButton 
-            markdown 
-            download_markdown 
-        />
+        <DesktopDownloadButton download_markdown=download_markdown.clone() />
+        <TouchDeviceDownloadButton download_markdown />
     }
 }
 
 #[component]
 fn DesktopDownloadButton(
-    markdown: ReadSignal<String>,
     download_markdown: impl Fn() + Send + 'static,
 ) -> impl IntoView {
     
@@ -46,7 +39,6 @@ fn DesktopDownloadButton(
 
 #[component]
 fn TouchDeviceDownloadButton(
-    markdown: ReadSignal<String>,
     download_markdown: impl Fn() + Send + 'static
 ) -> impl IntoView {
     
