@@ -29,7 +29,7 @@ pub fn WriteSection(
         >
             <textarea 
                 id="markdown-textarea"
-                class="textarea has-fixed-size card full-height p-5"
+                class="textarea has-fixed-size card is-family-monospace full-height p-5"
                 placeholder="Write your Markdown here..."
                 node_ref=textarea_ref
                 prop:value=markdown
