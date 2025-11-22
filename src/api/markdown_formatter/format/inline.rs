@@ -165,7 +165,7 @@ impl<'a> Inline<'a> {
             );
 
             let new_start = (start + self.prefix.len()) as u32;
-            let new_end = (new_start + (end - start) as u32) as u32;
+            let new_end = new_start + (end - start) as u32;
             return (new_text, new_start, new_end);
         }
 

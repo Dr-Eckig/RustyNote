@@ -49,10 +49,9 @@ pub fn WriteSection(
                     // }
                 }
                 on:scroll=move |ev| {
-                    if let Some(target) = ev.target() {
-                        if let Ok(textarea) = target.dyn_into::<web_sys::HtmlTextAreaElement>() {
-                            scroll.set(textarea.scroll_top().into());
-                        }
+                    if let Some(target) = ev.target() 
+                    && let Ok(textarea) = target.dyn_into::<web_sys::HtmlTextAreaElement>() {
+                        scroll.set(textarea.scroll_top().into());
                     }
                 }
             />

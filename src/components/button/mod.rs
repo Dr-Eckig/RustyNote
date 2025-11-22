@@ -40,7 +40,7 @@ where F: Fn() + 'static {
 
     view! {
         <button 
-            class=move || button_class() on:click=move |_| on_click()
+            class=button_class on:click=move |_| on_click()
             disabled=move || state.map(|s| s.get() == State::Disabled).unwrap_or(false)
         >
             {
