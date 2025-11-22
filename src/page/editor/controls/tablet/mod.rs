@@ -2,6 +2,7 @@ use leptos::prelude::*;
 
 use crate::{components::{button::format_tables::FormatTablesButton, tooltip::TooltipDirection}, page::editor::controls::tablet::format_buttons::EditTextButtons};
 use crate::api::parser::Dialect;
+use crate::Mode;
 
 mod format_buttons;
 
@@ -9,6 +10,7 @@ mod format_buttons;
 pub fn TabletControls(
     markdown: RwSignal<String>,
     parser: RwSignal<Dialect>,
+    mode: RwSignal<Mode>,
 ) -> impl IntoView {
     
     view! {
@@ -16,7 +18,7 @@ pub fn TabletControls(
             <div class="is-flex is-justify-content-end py-3">
                 <FormatTablesButton markdown tooltip_direction=TooltipDirection::Right />
             </div>
-            <EditTextButtons markdown parser />
+            <EditTextButtons markdown parser mode />
         </div>
     }
 }

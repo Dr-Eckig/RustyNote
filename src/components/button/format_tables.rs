@@ -16,14 +16,14 @@ pub fn FormatTablesButton(
 
     let tooltip = Signal::derive(move || {
         if contains_markdown_table(&markdown.get()) {
-            None
+            String::new()
         } else {
-            Some("❌ This option will be enabled when a markdown table is inserted")
+            String::from("❌ This option will be enabled when a markdown table is inserted")
         }
     });
     
     view! {
-        <Tooltip text=tooltip.get().unwrap_or("") direction=tooltip_direction is_hidden=Signal::derive(move || tooltip.get().is_none())>
+        <Tooltip text=tooltip direction=tooltip_direction>
             <Button 
                 text="Format Tables"
                 icon=Icon::AlignJusitify

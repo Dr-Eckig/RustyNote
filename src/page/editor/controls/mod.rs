@@ -18,8 +18,8 @@ pub fn Controls(
 
     view! {
         <div>
-            <DesktopControls markdown parser />
-            <TabletControls markdown parser />
+            <DesktopControls markdown parser mode />
+            <TabletControls markdown parser mode />
         </div>
         <MobileControls markdown sidebar_open mode />
     }
