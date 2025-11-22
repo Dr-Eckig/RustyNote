@@ -263,16 +263,15 @@ impl Selection {
     /// ```
     pub fn replace_range(&self, start: usize, end: usize, replacement: &str) -> String {
         let string_capacity = self.textarea_value.len() + replacement.len();
-        let new_text = combine_text_slices(
+        
+        combine_text_slices(
             vec![
                 &self.textarea_value[..start], 
                 replacement, 
                 &self.textarea_value[end..]
             ], 
             string_capacity
-        );
-
-        new_text
+        )
     }
 
     /// Counts how many newline characters appear before the provided byte index.

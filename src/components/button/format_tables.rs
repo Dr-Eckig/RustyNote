@@ -1,11 +1,10 @@
 use leptos::prelude::*;
-use markdown_table_formatter::format_tables;
 
 use crate::components::{Color, Size, State, button::Button, icons::Icon, tooltip::{Tooltip, TooltipDirection}};
 
 #[component]
 pub fn FormatTablesButton(
-    markdown: RwSignal<String>, 
+    markdown: RwSignal<String>,
     #[prop(into)] tooltip_direction: Signal<TooltipDirection>
 ) -> impl IntoView {
 
@@ -17,28 +16,26 @@ pub fn FormatTablesButton(
 
     let tooltip = Signal::derive(move || {
         if contains_markdown_table(&markdown.get()) {
-            "Format Tables"
+            String::new()
         } else {
-            "❌ This option will be enabled when a markdown table is inserted"
+            String::from("❌ This option will be enabled when a markdown table is inserted")
         }
     });
-
+    
     view! {
         <Tooltip text=tooltip direction=tooltip_direction>
-            <div class="pl-2 is-relative">
-                <Button 
-                    text="Format Tables"
-                    icon=Icon::AlignJusitify
-                    color=Color::Primary
-                    size=Size::Small
-                    state
-                    on_click=move || {
-                        markdown.update(|md| {
-                            *md = format_tables(md.clone())
-                        })
-                    }
-                />
-            </div>
+            <Button 
+                text="Format Tables"
+                icon=Icon::AlignJusitify
+                color=Color::Primary
+                size=Size::Small
+                state
+                on_click=move || {
+                    markdown.update(|md| {
+                        *md = markdown_table_formatter::format_tables(md.clone())
+                    })
+                }
+            />
         </Tooltip>
     }
 }

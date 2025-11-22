@@ -1,23 +1,28 @@
 use leptos::prelude::*;
 
-use crate::{api::{markdown_formatter::format::TextFormattingType, parser::Dialect}, components::{Color, Size, State, button::Button, icons::Icon, tooltip::Tooltip}};
-
-fn tooltip(tip: String, parser: Dialect) -> String {
-    if let Dialect::Common = parser {
-        "❌ Please Enable GitHub extension".to_string()
-    } else {
-        tip
-    }
-}
+use crate::{api::{markdown_formatter::format::TextFormattingType, parser::Dialect}, components::{Color, Size, State, button::Button, icons::Icon, tooltip::{Tooltip, TooltipDirection}}};
+use crate::Mode;
 
 #[component]
-pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>) -> impl IntoView {
+pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>, mode: RwSignal<Mode>) -> impl IntoView {
 
-    let disable_github_features = Signal::derive(move || {
-        if let Dialect::Common = parser.get() {
+    let state = move |is_github_feature: bool| Signal::derive(move || {
+        if let Mode::Read = mode.get() {
+            State::Disabled
+        } else if let Dialect::Common = parser.get() && is_github_feature {
             State::Disabled
         } else {
             State::Normal
+        }
+    });
+
+    let tooltip = move |is_github_feature: bool| Signal::derive(move || {
+        if let Mode::Read = mode.get() {
+            String::from("❌ The Format Buttons are not available in Read Mode")
+        } else if let Dialect::Common = parser.get() && is_github_feature {
+            String::from("❌ Please Enable GitHub extension")
+        } else {
+            String::new()
         }
     });
 
@@ -26,19 +31,20 @@ pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>) ->
 
     view! {
         <div class="is-flex is-justify-content-space-between" style="gap: 0.5rem">
-            <Tooltip text="# Heading">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::Heading
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::Heading.apply_text_formatting())
                 />
             </Tooltip>
-            <FormatInlineButtons markdown parser color size disable_github_features />
-            <FormatListButtons markdown parser color size disable_github_features />
-            <FormatBlocksButtons markdown color size />
-            <FormatUrlButtons markdown color size />
-            <FormatStructureButtons markdown parser color size disable_github_features/> 
+            <FormatInlineButtons markdown color size state tooltip />
+            <FormatListButtons markdown color size state tooltip />
+            <FormatBlocksButtons markdown color size state tooltip />
+            <FormatUrlButtons markdown color size state tooltip />
+            <FormatStructureButtons markdown color size state tooltip /> 
         </div>
     }
 }
@@ -46,71 +52,47 @@ pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>) ->
 #[component]
 fn FormatInlineButtons(
     markdown: RwSignal<String>, 
-    parser: RwSignal<Dialect>, 
     color: Color, 
     size: Size, 
-    disable_github_features: Signal<State>
+    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
+    tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
 
     view! {
         <div class="buttons has-addons m-0">
-            <Tooltip text="**Bold**">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::Bold
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "**", suffix: "**" }.apply_text_formatting())
                 />
             </Tooltip>
-            <Tooltip text="_Italic_">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::Italic
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "_", suffix: "_" }.apply_text_formatting())
                 />
             </Tooltip>
-            // <Tooltip text=Signal::derive(move || tooltip(String::from("<ins> Underline </ins>"), parser.get()))>
-            //     <Button
-            //         icon=Icon::Underline
-            //         color
-            //         state=disable_github_features
-            //         size
-            //         on_click=move || markdown.set(TextFormattingType::Inline { prefix: "<ins>", suffix: "</ins>" }.apply_text_formatting())
-            //     />
-            // </Tooltip>
-            <Tooltip text=Signal::derive(move || tooltip(String::from("~~CrossOut~~"), parser.get()))>
+            <Tooltip text=tooltip(true)>
                 <Button
                     icon=Icon::CrossOut
                     color
-                    state=disable_github_features
                     size
+                    state=state(true)
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "~~", suffix: "~~" }.apply_text_formatting())
                 />
             </Tooltip>
-            // <Tooltip text=Signal::derive(move || tooltip(String::from("<sub> Subscript </sub>"), parser.get()))>
-            //     <Button
-            //         icon=Icon::Subscript
-            //         color
-            //         state=disable_github_features
-            //         size
-            //         on_click=move || markdown.set(TextFormattingType::Inline { prefix: "<sub>", suffix: "</sub>" }.apply_text_formatting())
-            //     />
-            // </Tooltip>
-            // <Tooltip text=Signal::derive(move || tooltip(String::from("<sup> Superscript </sup>"), parser.get()))>
-            //     <Button
-            //         icon=Icon::Superscript
-            //         color
-            //         state=disable_github_features
-            //         size
-            //         on_click=move || markdown.set(TextFormattingType::Inline { prefix: "<sup>", suffix: "</sup>" }.apply_text_formatting())
-            //     />
-            // </Tooltip>
-            <Tooltip text="`Inline Code`">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::Monospace
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "`", suffix: "`" }.apply_text_formatting())
                 />
             </Tooltip>
@@ -121,38 +103,40 @@ fn FormatInlineButtons(
 #[component]
 fn FormatListButtons(
     markdown: RwSignal<String>,
-    parser: RwSignal<Dialect>,
     color: Color, 
     size: Size, 
-    disable_github_features: Signal<State>
+    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
+    tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
 
     view! {
         <div class="buttons has-addons m-0">
-            <Tooltip text="- Unordered List">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::UnorderedList
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::LinePrefix { prefix: "- " }.apply_text_formatting())
                 />
             </Tooltip>
 
-            <Tooltip text="1. Ordered List">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::OrderedList
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::OrderedList.apply_text_formatting())
                 />
             </Tooltip>
 
-            <Tooltip text=Signal::derive(move || tooltip(String::from("- [ ] Checkbox"), parser.get()))>
+            <Tooltip text=tooltip(true)>
                 <Button
                     icon=Icon::Checkbox
                     color
-                    state=disable_github_features
                     size
+                    state=state(true)
                     on_click=move || markdown.set(TextFormattingType::LinePrefix { prefix: "- [ ] " }.apply_text_formatting())
                 />
             </Tooltip>
@@ -165,24 +149,28 @@ fn FormatBlocksButtons(
     markdown: RwSignal<String>, 
     color: Color, 
     size: Size, 
+    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
+    tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
     
     view! {
         <div class="buttons has-addons m-0">
-            <Tooltip text="```Code Block```">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::Code
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::CodeBlock.apply_text_formatting())
                 />
             </Tooltip>
         
-            <Tooltip text="> Blockquote">
+            <Tooltip text=tooltip(false)>
                 <Button
                     icon=Icon::Blockquote
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::LinePrefix { prefix: "> " }.apply_text_formatting())
                 />
             </Tooltip>
@@ -195,23 +183,27 @@ fn FormatUrlButtons(
     markdown: RwSignal<String>, 
     color: Color, 
     size: Size, 
+    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
+    tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
 
     view! {
         <div class="buttons has-addons m-0">
-            <Tooltip text="![Image](url)">
+            <Tooltip text=tooltip(false) direction=TooltipDirection::Right>
                 <Button
                     icon=Icon::Image
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "![", suffix: "](url)" }.apply_text_formatting())
                 />
             </Tooltip>
-            <Tooltip text="[Link](url)">
+            <Tooltip text=tooltip(false) direction=TooltipDirection::Right>
                 <Button
                     icon=Icon::Link
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::Inline { prefix: "[", suffix: "](url)" }.apply_text_formatting())
                 />
             </Tooltip>
@@ -222,28 +214,29 @@ fn FormatUrlButtons(
 #[component]
 fn FormatStructureButtons(
     markdown: RwSignal<String>, 
-    parser: RwSignal<Dialect>,
     color: Color, 
     size: Size, 
-    disable_github_features: Signal<State>
+    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
+    tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
 
     view! {
         <div class="buttons has-addons m-0">
-            <Tooltip text="--- Horizontal Rule">
+            <Tooltip text=tooltip(false) direction=TooltipDirection::Right>
                 <Button
                     icon=Icon::Line
                     color
                     size
+                    state=state(false)
                     on_click=move || markdown.set(TextFormattingType::HorizontalRule.apply_text_formatting())
                 />
             </Tooltip>
-            <Tooltip text=Signal::derive(move ||tooltip(String::from("| Table |"), parser.get()))>
+            <Tooltip text=tooltip(true) direction=TooltipDirection::Right>
                 <Button
                     icon=Icon::Table
                     color
                     size
-                    state=disable_github_features
+                    state=state(true)
                     on_click=move || markdown.set(TextFormattingType::Table.apply_text_formatting())
                 />
             </Tooltip>
