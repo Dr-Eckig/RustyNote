@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{html, prelude::*};
 use wasm_bindgen::JsCast;
 
 use crate::api::markdown_formatter::handle_enter_for_lists;
@@ -14,8 +14,26 @@ pub fn WriteSection(
     mobile_sidebar_open: RwSignal<bool>,
 ) -> impl IntoView {
 
-    let textarea_ref = NodeRef::new();
+    let textarea_ref: NodeRef<html::Textarea> = NodeRef::new();
     let scroll = RwSignal::new(0.0);
+
+    let sync_scroll_to_caret = move || {
+        if let Some(textarea) = textarea_ref.get() {
+            let len = textarea.value().len() as u32;
+            let caret_at_end = textarea
+                .selection_end()
+                .ok()
+                .flatten()
+                .map(|pos| pos >= len)
+                .unwrap_or(false);
+
+            if caret_at_end {
+                let _ = textarea.set_scroll_top(textarea.scroll_height());
+            }
+
+            scroll.set(textarea.scroll_top().into());
+        }
+    };
 
     view! {
         <MobileSidebar markdown parser sidebar_open=mobile_sidebar_open />
@@ -33,7 +51,10 @@ pub fn WriteSection(
                 placeholder="Write your Markdown here..."
                 node_ref=textarea_ref
                 prop:value=markdown
-                on:input=move |ev| markdown.set(event_target_value(&ev))
+                on:input=move |ev| {
+                    markdown.set(event_target_value(&ev));
+                    sync_scroll_to_caret();
+                }
                 on:keydown=move |ev: web_sys::KeyboardEvent| {
                     if ev.key() == "Enter" {
                         ev.prevent_default();                        
@@ -42,6 +63,7 @@ pub fn WriteSection(
                             markdown.set(textarea.value());
                             scroll.set(textarea.scroll_top().into());
                         }
+                        sync_scroll_to_caret();
                     }
                     // if ev.key() == "Tab" {
                     //     ev.prevent_default();
