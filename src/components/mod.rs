@@ -2,6 +2,7 @@ pub mod icons;
 pub mod button;
 pub mod select;
 pub mod confirmation;
+pub mod dialect;
 pub mod logo;
 pub mod tooltip;
 pub mod tabs;
