@@ -30,6 +30,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4 # repo checkout
 
+      - name: Clean dist
+        run: rm -rf dist
+
       # Install Rust Nightly Toolchain, with Clippy & Rustfmt
       - name: Install nightly Rust
         uses: dtolnay/rust-toolchain@nightly
