@@ -39,14 +39,11 @@ jobs:
       - name: Add WASM target
         run: rustup target add wasm32-unknown-unknown
 
+      - name: Reset Rust build
+        run: cargo clean
+
       - name: lint
         run: cargo clippy & cargo fmt
-
-
-      # If using tailwind...
-      # - name: Download and install tailwindcss binary
-      #   run: npm install -D tailwindcss && npx tailwindcss -i <INPUT/PATH.css> -o <OUTPUT/PATH.css>  # run tailwind
-
 
       - name: Download and install Trunk binary
         run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.18.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
@@ -55,16 +52,8 @@ jobs:
         run: ./trunk clean
 
       - name: Build with Trunk
-        # "${GITHUB_REPOSITORY#*/}" evaluates into the name of the repository
-        # using --public-url something will allow trunk to modify all the href paths like from favicon.ico to repo_name/favicon.ico .
-        # this is necessary for github pages where the site is deployed to username.github.io/repo_name and all files must be requested
-        # relatively as favicon.ico. if we skip public-url option, the href paths will instead request username.github.io/favicon.ico which
-        # will obviously return error 404 not found.
-        # run: ./trunk build --release --public-url './'
         run: ./trunk build --release --public-url "${GITHUB_REPOSITORY#*/}/"
 
-      # Copy index.html to 404.html for SPA routing
-      # Will allow routing to work if client enters from any route
       - name: Copy index.html to 404.html
         run: cp dist/index.html dist/404.html
 
