@@ -15,6 +15,7 @@ pub use doc::modal::HelpModal;
 #[allow(dead_code)]
 #[derive(Clone, Copy)]
 pub enum Color {
+    None,
     Primary,
     Link,
     Info,
@@ -30,6 +31,7 @@ pub enum Color {
 impl Color {
     pub fn to_class(self) -> &'static str {
         match self {
+            Color::None => "",
             Color::Primary => "is-primary",
             Color::Link => "is-link",
             Color::Info => "is-info",

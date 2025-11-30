@@ -12,7 +12,7 @@ use crate::components::{Color, Size, State};
 pub fn Button<F>(
     #[prop(default=Signal::from(None), into)] text: Signal<Option<String>>,
     #[prop(optional, into)] icon: Option<Signal<Icon>>,
-    #[prop(into, default=Signal::from(Color::Primary))] color: Signal<Color>,
+    #[prop(into, default=Signal::from(Color::None))] color: Signal<Color>,
     #[prop(into, default=Signal::from(Size::Normal))] size: Signal<Size>,
     #[prop(into, optional)] state: Option<Signal<State>>,
     #[prop(into, default=Signal::from(false))] is_rounded: Signal<bool>,
@@ -21,12 +21,6 @@ pub fn Button<F>(
     on_click: F,
 ) -> impl IntoView  
 where F: Fn() + 'static {
-
-    // let color = move || {
-    //     color
-    //         .map(|c| c.get())
-    //         .unwrap_or(Color::Primary)
-    // };
 
     let button_class = move || format!(
         "button {} {} {} {} {} {}", 

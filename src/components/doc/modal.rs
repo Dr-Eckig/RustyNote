@@ -5,7 +5,7 @@ use crate::components::{Color, Size, button::Button, doc::{commonmark::CommonMar
 
 #[component]
 pub fn HelpModal(
-    #[prop(into, default=Signal::from(false))] show_text: Signal<bool>,
+    #[prop(into, default=Signal::from(false))] is_dropdown_item: Signal<bool>,
     #[prop(default=false)] fullsize_button: bool,
 ) -> impl IntoView {
 
@@ -19,12 +19,12 @@ pub fn HelpModal(
 
     view! {
         <Button
-            text=Signal::derive(move || if show_text.get() { Some(String::from("Documentation")) } else { None })
+            text="Documentation"
             icon=Icon::Help
-            color=Color::Transparent
+            color=Signal::derive(move || if is_dropdown_item.get() { Color::Transparent } else { Color::None })
             size=Size::Normal
-            is_rounded=true
-            has_smaller_padding=true
+            // is_rounded=true
+            has_smaller_padding=is_dropdown_item
             is_full_size=fullsize_button
             on_click=move || modal_visible.set(true)
         />

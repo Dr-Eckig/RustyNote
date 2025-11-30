@@ -41,7 +41,7 @@ fn TouchDeviceSettings(markdown: RwSignal<String>, parser: RwSignal<Dialect>) ->
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
-					<HelpModal show_text=true fullsize_button=true />
+					<HelpModal is_dropdown_item=true fullsize_button=true />
 				</div>
 				<hr class="dropdown-divider" />
 				<div class="dropdown-item"> 
