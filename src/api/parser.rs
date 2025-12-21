@@ -25,17 +25,23 @@ impl Dialect {
     /// ```
     pub fn parse_markdown_to_html(&self, input: &str) -> String {
         
-        let options = match self {
-            Self::GitHub => markdown_options(),
-            Self::Common => ComrakOptions::default(),
-        };
+        match self {
+            Self::GitHub => {
+                let options = markdown_options();
 
-        if let Self::GitHub = self && input.contains("```") {
-            let mut plugins = ComrakPlugins::default();
-            plugins.render.codefence_syntax_highlighter = Some(&*HIGHLIGHTER);
-            markdown_to_html_with_plugins(input, &options, &plugins)
-        } else {
-            markdown_to_html(input, &options)
+                if input.contains("```") {
+                    let mut plugins = ComrakPlugins::default();
+                    plugins.render.codefence_syntax_highlighter = Some(&*HIGHLIGHTER);
+                    return markdown_to_html_with_plugins(input, &options, &plugins);
+                } else {
+                    markdown_to_html(input, &options)
+                }
+
+            } ,
+            Self::Common => {
+                let options = ComrakOptions::default();
+                markdown_to_html(input, &options)
+            }
         }
     }
 }
