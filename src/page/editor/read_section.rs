@@ -15,12 +15,12 @@ pub fn ReadSection(
 
     view! {
         <div 
-            class="column content m-0 pr-0" 
+            class="column m-0 pr-0" 
             class:pl-0=mode.get() != Mode::Split 
             style="overflow-x: auto; max-width: 100%; text-overflow: break-word;"
         >
             <div 
-                class="card full-height p-5" 
+                class="card content full-height p-5" 
                 inner_html=move || parsed_markdown.get()
             /> 
         </div>
