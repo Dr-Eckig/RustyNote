@@ -25,6 +25,7 @@ pub fn FormatTablesButton(
     view! {
         <Tooltip text=tooltip direction=tooltip_direction>
             <Button 
+                aria_label=String::from("Format Tables")
                 text="Format Tables"
                 icon=Icon::AlignJusitify
                 color=Color::Primary

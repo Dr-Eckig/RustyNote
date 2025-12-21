@@ -24,6 +24,7 @@ pub fn MobileControls(
         <div class="is-flex is-justify-content-space-between is-hidden-tablet px-5 pt-3">
             <Tooltip text=String::from("❌ The Format Buttons are not available in Read Mode") is_hidden=Signal::derive(move || matches!(mode.get(), Mode::Write))>
                 <Button 
+                    aria_label=Signal::derive(move || if sidebar_open.get() { "Close Sidebar" } else { "Open Sidebar" })
                     icon=Signal::derive(move || if sidebar_open.get() { Icon::ChevronLeft } else { Icon::ChevronRight })
                     color=Color::Primary
                     size=Size::Small

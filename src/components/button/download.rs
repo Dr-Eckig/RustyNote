@@ -27,6 +27,7 @@ fn DesktopDownloadButton(
         <div class="is-hidden-touch">
             <Tooltip text="Download Markdown" direction=TooltipDirection::Right>
                 <Button
+                    aria_label=String::from("Download Markdown")
                     icon=Icon::Download 
                     color=Color::White
                     size=Size::Small 
@@ -45,6 +46,7 @@ fn TouchDeviceDownloadButton(
     view! {
         <div class="is-hidden-desktop">
             <Button
+                aria_label=String::from("Download Markdown")
                 text="Download Markdown"
                 icon=Icon::Download 
                 color=Color::Transparent

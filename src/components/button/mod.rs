@@ -11,6 +11,7 @@ use crate::components::{Color, Size, State};
 #[component]
 pub fn Button<F>(
     #[prop(default=Signal::from(None), into)] text: Signal<Option<String>>,
+    #[prop(into)] aria_label: Signal<String>,
     #[prop(optional, into)] icon: Option<Signal<Icon>>,
     #[prop(into, default=Signal::from(Color::None))] color: Signal<Color>,
     #[prop(into, default=Signal::from(Size::Normal))] size: Signal<Size>,
@@ -36,6 +37,7 @@ where F: Fn() + 'static {
         <button 
             class=button_class on:click=move |_| on_click()
             disabled=move || state.map(|s| s.get() == State::Disabled).unwrap_or(false)
+            aria-label=aria_label
         >
             {
                 icon.map(|icon_signal| {

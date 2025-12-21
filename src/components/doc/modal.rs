@@ -19,11 +19,11 @@ pub fn HelpModal(
 
     view! {
         <Button
+            aria_label=String::from("Open Documentation")
             text="Documentation"
             icon=Icon::Help
             color=Signal::derive(move || if is_dropdown_item.get() { Color::Transparent } else { Color::None })
             size=Size::Normal
-            // is_rounded=true
             has_smaller_padding=is_dropdown_item
             is_full_size=fullsize_button
             on_click=move || modal_visible.set(true)

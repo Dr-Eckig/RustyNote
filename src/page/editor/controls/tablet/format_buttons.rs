@@ -33,6 +33,7 @@ pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>, mo
         <div class="is-flex is-justify-content-space-between" style="gap: 0.5rem">
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Heading")
                     icon=Icon::Heading
                     color
                     size
@@ -62,6 +63,7 @@ fn FormatInlineButtons(
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Bold")
                     icon=Icon::Bold
                     color
                     size
@@ -71,6 +73,7 @@ fn FormatInlineButtons(
             </Tooltip>
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Italic")
                     icon=Icon::Italic
                     color
                     size
@@ -80,6 +83,7 @@ fn FormatInlineButtons(
             </Tooltip>
             <Tooltip text=tooltip(true)>
                 <Button
+                    aria_label=String::from("Strikethrough")
                     icon=Icon::CrossOut
                     color
                     size
@@ -89,6 +93,7 @@ fn FormatInlineButtons(
             </Tooltip>
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Inline Code")
                     icon=Icon::Monospace
                     color
                     size
@@ -113,6 +118,7 @@ fn FormatListButtons(
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Unordered List")
                     icon=Icon::UnorderedList
                     color
                     size
@@ -123,6 +129,7 @@ fn FormatListButtons(
 
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Ordered List")
                     icon=Icon::OrderedList
                     color
                     size
@@ -133,6 +140,7 @@ fn FormatListButtons(
 
             <Tooltip text=tooltip(true)>
                 <Button
+                    aria_label=String::from("Checkbox")
                     icon=Icon::Checkbox
                     color
                     size
@@ -157,6 +165,7 @@ fn FormatBlocksButtons(
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Code Block")
                     icon=Icon::Code
                     color
                     size
@@ -167,6 +176,7 @@ fn FormatBlocksButtons(
         
             <Tooltip text=tooltip(false)>
                 <Button
+                    aria_label=String::from("Blockquote")
                     icon=Icon::Blockquote
                     color
                     size
@@ -191,6 +201,7 @@ fn FormatUrlButtons(
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false) direction=TooltipDirection::Right>
                 <Button
+                    aria_label=String::from("Image")
                     icon=Icon::Image
                     color
                     size
@@ -200,6 +211,7 @@ fn FormatUrlButtons(
             </Tooltip>
             <Tooltip text=tooltip(false) direction=TooltipDirection::Right>
                 <Button
+                    aria_label=String::from("Link")
                     icon=Icon::Link
                     color
                     size
@@ -224,6 +236,7 @@ fn FormatStructureButtons(
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false) direction=TooltipDirection::Right>
                 <Button
+                    aria_label=String::from("Horizontal Rule")
                     icon=Icon::Line
                     color
                     size
@@ -233,6 +246,7 @@ fn FormatStructureButtons(
             </Tooltip>
             <Tooltip text=tooltip(true) direction=TooltipDirection::Right>
                 <Button
+                    aria_label=String::from("Table")
                     icon=Icon::Table
                     color
                     size

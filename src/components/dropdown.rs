@@ -19,6 +19,7 @@ impl DropdownDirection {
 
 #[component]
 pub fn DropdownButton(
+    aria_label: String,
     #[prop(into)] icon: Signal<Icon>, 
     #[prop(default=DropdownDirection::Left)] direction: DropdownDirection,
     children: Children
@@ -35,6 +36,7 @@ pub fn DropdownButton(
         <div class=format!("dropdown is-hoverable {}", direction.as_class()) class:is-active=move || dropdown_visible.get()>
             <div class="dropdown-trigger">
                 <Button
+                    aria_label
                     icon
                     size=Size::Normal
                     color=Color::Transparent

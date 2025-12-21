@@ -38,6 +38,7 @@ fn TouchDeviceDeleteButton(
     view! {
         <div class="is-hidden-desktop">
             <Button
+                aria_label=String::from("Clear Markdown")
                 text="Clear Markdown"
                 icon=Icon::Delete 
                 color=Color::Transparent

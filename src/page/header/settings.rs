@@ -31,7 +31,7 @@ fn TouchDeviceSettings(markdown: RwSignal<String>, parser: RwSignal<Dialect>) ->
 
     view! {
         <div class="is-flex is-align-items-center is-hidden-desktop">
-			<DropdownButton icon=Icon::Bars direction=DropdownDirection::Right>
+			<DropdownButton aria_label=String::from("Settings") icon=Icon::Bars direction=DropdownDirection::Right>
 				<div class="dropdown-item"> 
 					<DialectSelect parser />
 				</div>

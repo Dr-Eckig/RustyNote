@@ -20,6 +20,7 @@ pub fn Confirmation(
         <div class="dropdown is-right" class:is-active=move || dropdown_visible.get()>
             <div class="dropdown-trigger">
                 <Button 
+                    aria_label=String::from("Delete")
                     icon=Icon::Delete 
                     size=Size::Small 
                     color=Color::Danger
@@ -33,6 +34,7 @@ pub fn Confirmation(
                     </div>
                     <div class="is-flex dropdown-item is-justify-content-space-between is-align-items-center">
                         <Button
+                            aria_label=String::from("Confirm Deletion")
                             text="Delete"
                             icon=Icon::Delete 
                             size=Size::Small 
@@ -43,6 +45,7 @@ pub fn Confirmation(
                             }
                         />
                         <Button 
+                            aria_label=String::from("Cancel")
                             text="Cancel"
                             icon=Icon::Cross 
                             size=Size::Small 

@@ -41,6 +41,7 @@ fn DesktopCopyButton(
         <div class="is-hidden-touch">
             <Tooltip text=Signal::derive(move || if is_supported.get() { "Copy to Clipboard" } else { "Your Browser does not support copying" }) direction=TooltipDirection::Right>
                 <Button 
+                    aria_label=String::from("Copy to Clipboard")
                     icon=Icon::Copy
                     color=Color::White
                     size=Size::Small 
@@ -61,6 +62,7 @@ fn TouchDeviceCopyButton(
     view! {
         <div class="is-hidden-desktop">
             <Button 
+                aria_label=String::from("Copy to Clipboard")
                 text="Copy Markdown"
                 icon=Icon::Copy
                 color=Color::Transparent
