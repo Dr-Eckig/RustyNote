@@ -34,8 +34,8 @@ jobs:
         run: rm -rf dist
 
       # Install Rust Nightly Toolchain, with Clippy & Rustfmt
-      - name: Install nightly Rust
-        uses: dtolnay/rust-toolchain@nightly
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
