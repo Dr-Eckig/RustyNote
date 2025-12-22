@@ -197,13 +197,10 @@ impl CheckboxMarkerParser {
     fn parse(line: &str) -> Option<&str> {
         const MARKERS: &[&str] = &["- [ ] ", "- [x] ", "- [X] "];
 
-        for marker in MARKERS {
-            if line.starts_with(marker) {
-                return Some(marker);
-            }
-        }
-
-        None
+        MARKERS
+            .iter()
+            .find(|&marker| line.starts_with(marker))
+            .map(|v| v as _)
     }
 }
 
@@ -213,13 +210,10 @@ impl BulletMarkerParser {
     fn parse(line: &str) -> Option<&str> {
         const MARKERS: &[&str] = &["- ", "* "];
 
-        for marker in MARKERS {
-            if line.starts_with(marker) {
-                return Some(marker);
-            }
-        }
-
-        None
+        MARKERS
+            .iter()
+            .find(|&marker| line.starts_with(marker))
+            .map(|v| v as _)
     }
 }
 
@@ -234,7 +228,7 @@ fn has_content_after_marker(line: &str, marker_length: usize) -> bool {
         return false;
     }
 
-    line[marker_length..].trim().len() > 0
+    !line[marker_length..].trim().is_empty()
 }
 
 fn insert_newline_at_cursor(text: &str, position: usize) -> (String, usize) {

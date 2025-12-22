@@ -276,11 +276,11 @@ impl<'a> CodeBlock<'a> {
 
     fn connector_before(before_base: &str, removed_newlines: usize) -> String {
         if removed_newlines >= 2 {
-            "\n".to_string()
-        } else if before_base.ends_with(' ') {
+            return "\n".to_string();
+        }
+
+        if before_base.ends_with(' ') {
             String::new()
-        } else if removed_newlines == 1 {
-            " ".to_string()
         } else {
             " ".to_string()
         }

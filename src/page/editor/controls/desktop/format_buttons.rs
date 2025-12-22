@@ -75,8 +75,8 @@ fn FormatInlineButtons(
     markdown: RwSignal<String>,
     color: Color,
     size: Size,
-    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
-    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Clone + Copy + 'static,
+    state: impl Send + Fn(bool) -> Signal<State> + Copy + 'static,
+    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Copy + 'static,
 ) -> impl IntoView {
     view! {
         <div class="buttons has-addons m-0">
@@ -129,8 +129,8 @@ fn FormatListButtons(
     markdown: RwSignal<String>,
     color: Color,
     size: Size,
-    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
-    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Clone + Copy + 'static,
+    state: impl Send + Fn(bool) -> Signal<State> + Copy + 'static,
+    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Copy + 'static,
 ) -> impl IntoView {
     view! {
         <div class="buttons has-addons m-0">
@@ -175,8 +175,8 @@ fn FormatBlocksButtons(
     markdown: RwSignal<String>,
     color: Color,
     size: Size,
-    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
-    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Clone + Copy + 'static,
+    state: impl Send + Fn(bool) -> Signal<State> + Copy + 'static,
+    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Copy + 'static,
 ) -> impl IntoView {
     view! {
         <div class="buttons has-addons m-0">
@@ -210,8 +210,8 @@ fn FormatUrlButtons(
     markdown: RwSignal<String>,
     color: Color,
     size: Size,
-    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
-    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Clone + Copy + 'static,
+    state: impl Send + Fn(bool) -> Signal<State> + Copy + 'static,
+    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Copy + 'static,
 ) -> impl IntoView {
     view! {
         <div class="buttons has-addons m-0">
@@ -244,8 +244,8 @@ fn FormatStructureButtons(
     markdown: RwSignal<String>,
     color: Color,
     size: Size,
-    state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
-    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Clone + Copy + 'static,
+    state: impl Send + Fn(bool) -> Signal<State> + Copy + 'static,
+    tooltip: impl Send + Fn(String, bool) -> Signal<String> + Copy + 'static,
 ) -> impl IntoView {
     view! {
         <div class="buttons has-addons m-0">

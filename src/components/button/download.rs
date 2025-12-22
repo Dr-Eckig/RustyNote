@@ -17,7 +17,7 @@ pub fn DownloadButton(markdown: ReadSignal<String>) -> impl IntoView {
     };
 
     view! {
-        <DesktopDownloadButton download_markdown=download_markdown.clone() />
+        <DesktopDownloadButton download_markdown=download_markdown />
         <TouchDeviceDownloadButton download_markdown />
     }
 }

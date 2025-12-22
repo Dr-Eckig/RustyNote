@@ -62,16 +62,14 @@ impl<'a> BlockPrefix<'a> {
             } else {
                 new_end = new_end.saturating_sub(prefix_len * line_count);
             }
+        } else if sel.is_empty() {
+            new_start += prefix_len;
+            new_end = new_start;
+        } else if line_count == 1 {
+            new_start += prefix_len;
+            new_end += prefix_len;
         } else {
-            if sel.is_empty() {
-                new_start += prefix_len;
-                new_end = new_start;
-            } else if line_count == 1 {
-                new_start += prefix_len;
-                new_end += prefix_len;
-            } else {
-                new_end += prefix_len * line_count;
-            }
+            new_end += prefix_len * line_count;
         }
 
         (new_text, new_start as u32, new_end as u32)
@@ -89,8 +87,8 @@ impl<'a> BlockPrefix<'a> {
 
         if add {
             format!("{}{}{}", " ".repeat(indent), self.prefix, trimmed)
-        } else if trimmed.starts_with(self.prefix) {
-            format!("{}{}", " ".repeat(indent), &trimmed[self.prefix.len()..])
+        } else if let Some(stripped) = trimmed.strip_prefix(self.prefix) {
+            format!("{}{}", " ".repeat(indent), stripped)
         } else {
             line.to_string()
         }

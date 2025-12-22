@@ -64,16 +64,14 @@ impl<'a> OrderedList<'a> {
                 let total_prefix = prefix_length.saturating_mul(line_count);
                 new_end = new_end.saturating_sub(total_prefix);
             }
+        } else if self.selection.is_empty() {
+            new_start += prefix_length;
+            new_end = new_start;
+        } else if line_count == 1 {
+            new_start += prefix_length;
+            new_end += prefix_length;
         } else {
-            if self.selection.is_empty() {
-                new_start += prefix_length;
-                new_end = new_start;
-            } else if line_count == 1 {
-                new_start += prefix_length;
-                new_end += prefix_length;
-            } else {
-                new_end += prefix_length * line_count;
-            }
+            new_end += prefix_length * line_count;
         }
 
         // Tests assert the relative span for multi-line removals; runtime keeps absolute caret positions.

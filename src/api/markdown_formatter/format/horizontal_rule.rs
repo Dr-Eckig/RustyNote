@@ -100,10 +100,9 @@ impl<'a> HorizontalRule<'a> {
         } else if insert_pos < end {
             end += hr_len;
         }
-
         (start, end)
     }
-
+    #[allow(clippy::if_same_then_else)]
     fn calculate_newlines(before: &str, after: &str) -> (String, String) {
         let prefix = if before.is_empty() {
             ""

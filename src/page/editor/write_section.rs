@@ -27,7 +27,7 @@ pub fn WriteSection(
                 .unwrap_or(false);
 
             if caret_at_end {
-                let _ = textarea.set_scroll_top(textarea.scroll_height());
+                textarea.set_scroll_top(textarea.scroll_height());
             }
 
             scroll.set(textarea.scroll_top().into());

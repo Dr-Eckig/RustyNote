@@ -59,10 +59,11 @@ impl<'a> Inline<'a> {
         let text = &self.selection.textarea_value;
 
         if self.selection.selected_text.is_some() {
-            if let Some(ref selected) = self.selection.selected_text {
-                if selected.starts_with(self.prefix) && selected.ends_with(self.suffix) {
-                    return self.unwrap_full_selection();
-                }
+            if let Some(ref selected) = self.selection.selected_text
+                && selected.starts_with(self.prefix)
+                && selected.ends_with(self.suffix)
+            {
+                return self.unwrap_full_selection();
             }
 
             if start >= self.prefix.len()

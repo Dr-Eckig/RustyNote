@@ -170,7 +170,7 @@ impl<'a> Table<'a> {
     fn build_new_text(&self, before: &str, table: &str, after: &str) -> String {
         let mut out = String::new();
 
-        let table = format_tables(table.to_string());
+        let table = format_tables(table);
 
         if !before.is_empty() {
             out.push_str(before);
