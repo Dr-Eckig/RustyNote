@@ -33,7 +33,7 @@ jobs:
       - name: Clean dist
         run: rm -rf dist
 
-      # Install Rust Nightly Toolchain, with Clippy & Rustfmt
+      # Install Rust Stable Toolchain, with Clippy & Rustfmt
       - name: Install stable Rust
         uses: dtolnay/rust-toolchain@stable
         with:
