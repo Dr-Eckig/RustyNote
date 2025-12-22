@@ -1688,7 +1688,6 @@ dependencies = [
  "leptos",
  "leptos-use",
  "markdown-table-formatter",
- "once_cell",
  "regex",
  "wasm-bindgen",
  "wasm-bindgen-futures",

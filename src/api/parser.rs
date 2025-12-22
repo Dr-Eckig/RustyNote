@@ -1,10 +1,6 @@
 use std::{fmt, str::FromStr};
 
-use comrak::{markdown_to_html, markdown_to_html_with_plugins, plugins::syntect::SyntectAdapter, ComrakOptions, ComrakPlugins, ExtensionOptions, ParseOptions, RenderOptions};
-use once_cell::sync::Lazy;
-
-static HIGHLIGHTER: Lazy<SyntectAdapter> =
-    Lazy::new(|| SyntectAdapter::new(Some("base16-ocean.light")));
+use comrak::{markdown_to_html, ComrakOptions, ExtensionOptions, ParseOptions, RenderOptions};
 
 /// Selects which markdown dialect should be used for parsing.
 #[derive(PartialEq, Clone, Debug, Default)]
@@ -26,22 +22,34 @@ impl Dialect {
     pub fn parse_markdown_to_html(&self, input: &str) -> String {
         
         match self {
-            Self::GitHub => {
-                let options = markdown_options();
-
-                if input.contains("```") {
-                    let mut plugins = ComrakPlugins::default();
-                    plugins.render.codefence_syntax_highlighter = Some(&*HIGHLIGHTER);
-                    return markdown_to_html_with_plugins(input, &options, &plugins);
-                } else {
-                    markdown_to_html(input, &options)
-                }
-
-            } ,
             Self::Common => {
                 let options = ComrakOptions::default();
                 markdown_to_html(input, &options)
-            }
+            },
+            Self::GitHub => {
+                let options = ComrakOptions {
+                    extension: ExtensionOptions {
+                        strikethrough: true,
+                        table: true,
+                        autolink: true,
+                        tasklist: true,
+                        tagfilter: true,
+                        ..Default::default()
+                    },
+                    parse: ParseOptions {
+                        ..Default::default()
+                    },
+                    render: RenderOptions {
+                        github_pre_lang: true,
+                        gfm_quirks: true,
+                        ..Default::default()
+                    },
+                };
+
+                markdown_to_html(input, &options)
+                
+
+            },
         }
     }
 }
@@ -67,23 +75,5 @@ impl FromStr for Dialect {
     }
 }
 
-fn markdown_options() -> ComrakOptions<'static> {
-    ComrakOptions {
-        extension: ExtensionOptions {
-            strikethrough: true,
-            table: true,
-            autolink: true,
-            tasklist: true,
-            tagfilter: true,
-            ..Default::default()
-        },
-        parse: ParseOptions {
-            ..Default::default()
-        },
-        render: RenderOptions {
-            github_pre_lang: true,
-            gfm_quirks: true,
-            ..Default::default()
-        },
-    }
-}
+
+

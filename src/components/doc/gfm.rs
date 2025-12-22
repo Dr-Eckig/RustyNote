@@ -29,7 +29,6 @@ When you switch the editor to the GitHub dialect, RustyNote enables these extra 
 | **Task Lists**               | `- [ ] Planned` <br> `- [x] Completed`                                                           | `<ul><li><input disabled type="checkbox">...</li></ul>`         | ![Checkbox](resources/images/gfm/checkbox1.png)<br>![Checkbox](resources/images/gfm/checkbox2.png)             |
 | **Tables**                   | ![Table](resources/images/gfm/table_syntax1.png)<br>![Table](resources/images/gfm/table_syntax2.png) | `<table><thead>…</thead><tbody>…</tbody></table>`               | ![Table](resources/images/gfm/table_rendered1.png)<br>![Table](resources/images/gfm/table_rendered2.png) |
 | **Automatic Link Detection** | `https://example.com`                                                                            | `<a href="https://example.com">https://example.com</a>`         | https://example.com                                                                                  |
-| **Code Highlighting**        | ` ```rust `<br>` println!("Hi!"); `<br>` ``` `                                                   | `<pre><code class="language-rust">println!("Hi");</code></pre>` | ![Syntax Highlighting](resources/images/gfm/highlighting.png)                                                        |
 
 
 ### Usage hints
