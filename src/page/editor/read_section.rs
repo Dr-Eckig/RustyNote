@@ -11,7 +11,8 @@ pub fn ReadSection(
 
     let parsed_markdown = Signal::derive(move || {
         let markdown = markdown.read();
-        parser.with(|parser| parser.parse_markdown_to_html(&markdown))
+        let parser = parser.read();
+        parser.parse_markdown_to_html(&markdown)
     });
 
     view! {
