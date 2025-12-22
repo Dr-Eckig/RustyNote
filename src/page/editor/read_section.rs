@@ -10,7 +10,8 @@ pub fn ReadSection(
 ) -> impl IntoView {
 
     let parsed_markdown = Signal::derive(move || {
-        parser.read().parse_markdown_to_html(&markdown.read())
+        let markdown = markdown.read();
+        parser.with(|parser| parser.parse_markdown_to_html(&markdown))
     });
 
     view! {
