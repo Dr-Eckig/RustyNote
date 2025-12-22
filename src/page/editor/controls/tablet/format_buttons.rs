@@ -1,30 +1,49 @@
 use leptos::prelude::*;
 
-use crate::{api::{markdown_formatter::format::TextFormattingType, parser::Dialect}, components::{Color, Size, State, button::Button, icons::Icon, tooltip::{Tooltip, TooltipDirection}}};
 use crate::Mode;
+use crate::{
+    api::{markdown_formatter::format::TextFormattingType, parser::Dialect},
+    components::{
+        Color, Size, State,
+        button::Button,
+        icons::Icon,
+        tooltip::{Tooltip, TooltipDirection},
+    },
+};
 
 #[component]
-pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>, mode: RwSignal<Mode>) -> impl IntoView {
+pub fn EditTextButtons(
+    markdown: RwSignal<String>,
+    parser: RwSignal<Dialect>,
+    mode: RwSignal<Mode>,
+) -> impl IntoView {
+    let state = move |is_github_feature: bool| {
+        Signal::derive(move || {
+            if let Mode::Read = mode.get() {
+                State::Disabled
+            } else if let Dialect::Common = parser.get()
+                && is_github_feature
+            {
+                State::Disabled
+            } else {
+                State::Normal
+            }
+        })
+    };
 
-    let state = move |is_github_feature: bool| Signal::derive(move || {
-        if let Mode::Read = mode.get() {
-            State::Disabled
-        } else if let Dialect::Common = parser.get() && is_github_feature {
-            State::Disabled
-        } else {
-            State::Normal
-        }
-    });
-
-    let tooltip = move |is_github_feature: bool| Signal::derive(move || {
-        if let Mode::Read = mode.get() {
-            String::from("❌ The Format Buttons are not available in Read Mode")
-        } else if let Dialect::Common = parser.get() && is_github_feature {
-            String::from("❌ Please Enable GitHub extension")
-        } else {
-            String::new()
-        }
-    });
+    let tooltip = move |is_github_feature: bool| {
+        Signal::derive(move || {
+            if let Mode::Read = mode.get() {
+                String::from("❌ The Format Buttons are not available in Read Mode")
+            } else if let Dialect::Common = parser.get()
+                && is_github_feature
+            {
+                String::from("❌ Please Enable GitHub extension")
+            } else {
+                String::new()
+            }
+        })
+    };
 
     let size = Size::Small;
     let color = Color::White;
@@ -45,20 +64,19 @@ pub fn EditTextButtons(markdown: RwSignal<String>, parser: RwSignal<Dialect>, mo
             <FormatListButtons markdown color size state tooltip />
             <FormatBlocksButtons markdown color size state tooltip />
             <FormatUrlButtons markdown color size state tooltip />
-            <FormatStructureButtons markdown color size state tooltip /> 
+            <FormatStructureButtons markdown color size state tooltip />
         </div>
     }
 }
 
 #[component]
 fn FormatInlineButtons(
-    markdown: RwSignal<String>, 
-    color: Color, 
-    size: Size, 
+    markdown: RwSignal<String>,
+    color: Color,
+    size: Size,
     state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
     tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
-
     view! {
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false)>
@@ -108,12 +126,11 @@ fn FormatInlineButtons(
 #[component]
 fn FormatListButtons(
     markdown: RwSignal<String>,
-    color: Color, 
-    size: Size, 
+    color: Color,
+    size: Size,
     state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
     tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
-
     view! {
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false)>
@@ -154,13 +171,12 @@ fn FormatListButtons(
 
 #[component]
 fn FormatBlocksButtons(
-    markdown: RwSignal<String>, 
-    color: Color, 
-    size: Size, 
+    markdown: RwSignal<String>,
+    color: Color,
+    size: Size,
     state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
     tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
-    
     view! {
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false)>
@@ -173,7 +189,7 @@ fn FormatBlocksButtons(
                     on_click=move || markdown.set(TextFormattingType::CodeBlock.apply_text_formatting())
                 />
             </Tooltip>
-        
+
             <Tooltip text=tooltip(false)>
                 <Button
                     aria_label=String::from("Blockquote")
@@ -190,13 +206,12 @@ fn FormatBlocksButtons(
 
 #[component]
 fn FormatUrlButtons(
-    markdown: RwSignal<String>, 
-    color: Color, 
-    size: Size, 
+    markdown: RwSignal<String>,
+    color: Color,
+    size: Size,
     state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
     tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
-
     view! {
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false) direction=TooltipDirection::Right>
@@ -225,13 +240,12 @@ fn FormatUrlButtons(
 
 #[component]
 fn FormatStructureButtons(
-    markdown: RwSignal<String>, 
-    color: Color, 
-    size: Size, 
+    markdown: RwSignal<String>,
+    color: Color,
+    size: Size,
     state: impl Send + Fn(bool) -> Signal<State> + Clone + Copy + 'static,
     tooltip: impl Send + Fn(bool) -> Signal<String> + Clone + Copy + 'static,
 ) -> impl IntoView {
-
     view! {
         <div class="buttons has-addons m-0">
             <Tooltip text=tooltip(false) direction=TooltipDirection::Right>

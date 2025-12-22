@@ -1,10 +1,16 @@
 use leptos::prelude::*;
 
-use crate::{api::{markdown_formatter::format::TextFormattingType, parser::Dialect}, components::{Color, Size, State, button::Button, icons::Icon}};
+use crate::{
+    api::{markdown_formatter::format::TextFormattingType, parser::Dialect},
+    components::{Color, Size, State, button::Button, icons::Icon},
+};
 
 #[component]
-pub fn MobileSidebar(markdown: RwSignal<String>, parser: RwSignal<Dialect>, sidebar_open: RwSignal<bool>) -> impl IntoView {
-    
+pub fn MobileSidebar(
+    markdown: RwSignal<String>,
+    parser: RwSignal<Dialect>,
+    sidebar_open: RwSignal<bool>,
+) -> impl IntoView {
     let disable_github_features = Signal::derive(move || {
         if let Dialect::Common = parser.get() {
             State::Disabled
@@ -15,7 +21,7 @@ pub fn MobileSidebar(markdown: RwSignal<String>, parser: RwSignal<Dialect>, side
     let size = Size::Small;
     let color = Color::White;
 
-    view! { 
+    view! {
         <div class="column is-narrow is-hidden-tablet px-0">
             <div class="sidebar is-flex is-flex-direction-column is-justify-content-space-evenly pr-2" class:is-active=move || sidebar_open.get()>
                 <Button

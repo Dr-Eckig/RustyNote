@@ -1,10 +1,10 @@
-mod textarea;
-mod shortcuts;
-mod handler;
 pub mod format;
+mod handler;
+mod shortcuts;
+mod textarea;
 
-pub use shortcuts::setup_shortcuts;
 pub use handler::handle_enter_for_lists;
+pub use shortcuts::setup_shortcuts;
 
 pub(crate) fn combine_text_slices(texts: Vec<&str>, capacity: usize) -> String {
     let mut result = String::with_capacity(capacity);

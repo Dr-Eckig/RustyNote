@@ -1,4 +1,4 @@
-pub mod modal;
 mod commonmark;
 mod gfm;
+pub mod modal;
 mod rustynote;

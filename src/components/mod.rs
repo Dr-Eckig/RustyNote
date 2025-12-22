@@ -1,14 +1,14 @@
-pub mod icons;
 pub mod button;
-pub mod select;
 pub mod confirmation;
 pub mod dialect;
+mod doc;
+pub mod dropdown;
+pub mod icons;
 pub mod logo;
-pub mod tooltip;
+pub mod select;
 pub mod tabs;
 pub mod theme;
-pub mod dropdown;
-mod doc;
+pub mod tooltip;
 
 pub use doc::modal::HelpModal;
 

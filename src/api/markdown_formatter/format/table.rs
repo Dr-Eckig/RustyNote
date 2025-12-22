@@ -1,7 +1,7 @@
 use markdown_table_formatter::format_tables;
 
-use crate::api::markdown_formatter::textarea::Selection;
 use super::SelectionFormatter;
+use crate::api::markdown_formatter::textarea::Selection;
 
 /// Formatter that generates a markdown table scaffold from the selected text.
 ///
@@ -39,11 +39,12 @@ impl<'a> Table<'a> {
             ..
         } = &self.selection;
 
-        let (headers, before_clean, after_clean, caret_override) = if let Some(selected) = selected_text {
-            self.handle_multiline_selection(selected, before_selection, after_selection)
-        } else {
-            self.handle_cursor_position(before_selection, after_selection)
-        };
+        let (headers, before_clean, after_clean, caret_override) =
+            if let Some(selected) = selected_text {
+                self.handle_multiline_selection(selected, before_selection, after_selection)
+            } else {
+                self.handle_cursor_position(before_selection, after_selection)
+            };
 
         let table_text = self.build_table_text(&headers);
         let new_text = self.build_new_text(&before_clean, &table_text, &after_clean);
@@ -58,8 +59,14 @@ impl<'a> Table<'a> {
         before_selection: &str,
         after_selection: &str,
     ) -> (Vec<String>, String, String, Option<usize>) {
-        let before = before_selection.trim_end_matches('\n').trim_end().to_string();
-        let after = after_selection.trim_start_matches('\n').trim_start().to_string();
+        let before = before_selection
+            .trim_end_matches('\n')
+            .trim_end()
+            .to_string();
+        let after = after_selection
+            .trim_start_matches('\n')
+            .trim_start()
+            .to_string();
 
         let mut lines: Vec<String> = selected_text
             .lines()
@@ -149,11 +156,7 @@ impl<'a> Table<'a> {
             .map(|h| format!("| {} ", h))
             .collect::<String>()
             + "|";
-        let separator_row = headers
-            .iter()
-            .map(|_| "|----------")
-            .collect::<String>()
-            + "|";
+        let separator_row = headers.iter().map(|_| "|----------").collect::<String>() + "|";
         let cell_row = headers
             .iter()
             .enumerate()
@@ -199,10 +202,7 @@ impl<'a> Table<'a> {
 
         let target_index = determine_target_header_index(headers, caret_override);
         let header_start_offset = header_start_offset(headers, target_index);
-        let header_len = headers
-            .get(target_index)
-            .map(|h| h.len())
-            .unwrap_or(0);
+        let header_len = headers.get(target_index).map(|h| h.len()).unwrap_or(0);
 
         let start = table_insertion_offset + header_start_offset;
         let end = start + header_len;
@@ -287,7 +287,6 @@ impl<'a> SelectionFormatter for Table<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -295,17 +294,12 @@ mod tests {
 
     #[test]
     fn test_insert_table_simple() {
-
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
-        let text_expectation = String::from(
-            "| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n"
-        );
+        let text_expectation =
+            String::from("| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n");
         let start_index_expectation = 2;
         let end_index_expectation = 9;
 
@@ -314,19 +308,14 @@ mod tests {
         assert_eq!(caret_end_index, end_index_expectation);
     }
 
-     #[test]
+    #[test]
     fn test_insert_table_with_caret_in_single_word() {
-
-        let selection = Selection::new_with_caret_position(
-            String::from("Test"),
-            2
-        );
+        let selection = Selection::new_with_caret_position(String::from("Test"), 2);
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
-        let text_expectation = String::from(
-            "| Test | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n"
-        );
+        let text_expectation =
+            String::from("| Test | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n");
         let start_index_expectation = 9;
         let end_index_expectation = 16;
 
@@ -337,16 +326,12 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_caret_in_text_simple() {
-
-        let selection = Selection::new_with_caret_position(
-            String::from("I'm a Test."),
-            8
-        );
+        let selection = Selection::new_with_caret_position(String::from("I'm a Test."), 8);
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "I'm a\n\n| Test. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n"
+            "I'm a\n\n| Test. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n",
         );
         let start_index_expectation = 17;
         let end_index_expectation = 24;
@@ -358,16 +343,13 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_caret_in_text() {
-
-        let selection = Selection::new_with_caret_position(
-            String::from("I'm a Test. Have fun!"),
-            8
-        );
+        let selection =
+            Selection::new_with_caret_position(String::from("I'm a Test. Have fun!"), 8);
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "I'm a\n\n| Test. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nHave fun!"
+            "I'm a\n\n| Test. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nHave fun!",
         );
         let start_index_expectation = 17;
         let end_index_expectation = 24;
@@ -379,16 +361,12 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_caret_in_new_line_at_the_start() {
-
-        let selection = Selection::new_with_caret_position(
-            String::from("\nI'm a Test."),
-            0
-        );
+        let selection = Selection::new_with_caret_position(String::from("\nI'm a Test."), 0);
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nI'm a Test."
+            "| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nI'm a Test.",
         );
         let start_index_expectation = 2;
         let end_index_expectation = 9;
@@ -400,16 +378,12 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_caret_in_new_line_at_the_end() {
-
-        let selection = Selection::new_with_caret_position(
-            String::from("I'm a Test.\n"),
-            12
-        );
+        let selection = Selection::new_with_caret_position(String::from("I'm a Test.\n"), 12);
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "I'm a Test.\n\n| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n"
+            "I'm a Test.\n\n| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n",
         );
         let start_index_expectation = 15;
         let end_index_expectation = 22;
@@ -421,16 +395,15 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_selected_text_simple() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text"),
-            Some(String::from("I'm a selected text"))
+            Some(String::from("I'm a selected text")),
         );
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "| I'm a selected text | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n"
+            "| I'm a selected text | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n",
         );
         let start_index_expectation = 24;
         let end_index_expectation = 31;
@@ -442,16 +415,15 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_selected_word() {
-
         let selection = Selection::new_with_text(
             String::from("Hello, I'm a selected text. Nice to meet you!"),
-            Some(String::from("I'm a selected text. "))
+            Some(String::from("I'm a selected text. ")),
         );
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "Hello,\n\n| I'm a selected text. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nNice to meet you!"
+            "Hello,\n\n| I'm a selected text. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nNice to meet you!",
         );
         let start_index_expectation = 33;
         let end_index_expectation = 40;
@@ -463,7 +435,6 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_one_selected_line() {
-
         let selection = Selection::new_with_text(
             String::from("Hello, \nI'm a selected text. \nNice to meet you!"),
             Some(String::from("I'm a selected text. ")),
@@ -472,7 +443,7 @@ mod tests {
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "Hello,\n\n| I'm a selected text. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nNice to meet you!"
+            "Hello,\n\n| I'm a selected text. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\nNice to meet you!",
         );
         let start_index_expectation = 33;
         let end_index_expectation = 40;
@@ -484,7 +455,6 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_two_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("Hello, \nI'm a selected text. \nNice to meet you! \n:)"),
             Some(String::from("I'm a selected text. \nNice to meet you! ")),
@@ -493,7 +463,7 @@ mod tests {
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "Hello,\n\n| I'm a selected text. | Nice to meet you! | Header3 |\n|----------|----------|----------|\n| Cell1 | Cell2 | Cell3 |\n\n:)"
+            "Hello,\n\n| I'm a selected text. | Nice to meet you! | Header3 |\n|----------|----------|----------|\n| Cell1 | Cell2 | Cell3 |\n\n:)",
         );
         let start_index_expectation = 53;
         let end_index_expectation = 60;
@@ -505,16 +475,17 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_three_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("Hello, \nI'm a selected text. \nNice to meet you! \nHave Fun! \n:)"),
-            Some(String::from("I'm a selected text. \nNice to meet you! \nHave Fun! ")),
+            Some(String::from(
+                "I'm a selected text. \nNice to meet you! \nHave Fun! ",
+            )),
         );
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "Hello,\n\n| I'm a selected text. | Nice to meet you! | Have Fun! | Header4 |\n|----------|----------|----------|----------|\n| Cell1 | Cell2 | Cell3 | Cell4 |\n\n:)"
+            "Hello,\n\n| I'm a selected text. | Nice to meet you! | Have Fun! | Header4 |\n|----------|----------|----------|----------|\n| Cell1 | Cell2 | Cell3 | Cell4 |\n\n:)",
         );
         let start_index_expectation = 65;
         let end_index_expectation = 72;
@@ -526,16 +497,15 @@ mod tests {
 
     #[test]
     fn test_insert_table_with_emoji() {
-
         let selection = Selection::new_with_text(
             String::from("Hello, I'm a selected text. 😎 Nice to meet you!"),
-            Some(String::from("I'm a selected text. "))
+            Some(String::from("I'm a selected text. ")),
         );
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
 
         let text_expectation = String::from(
-            "Hello,\n\n| I'm a selected text. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n😎 Nice to meet you!"
+            "Hello,\n\n| I'm a selected text. | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n😎 Nice to meet you!",
         );
         let start_index_expectation = 33;
         let end_index_expectation = 40;
@@ -547,18 +517,15 @@ mod tests {
 
     #[test]
     fn test_insert_table_after_table() {
+        let input =
+            String::from("| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n");
 
-        let input = String::from("| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n");
-
-        let selection = Selection::new_with_caret_position(
-            input.clone(),
-            input.len()
-        );
+        let selection = Selection::new_with_caret_position(input.clone(), input.len());
 
         let (formatted_text, caret_start_index, caret_end_index) = Table::new(&selection).format();
-        
+
         let text_expectation = String::from(
-            "| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n"
+            "| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n| Header1 | Header2 |\n|----------|----------|\n| Cell1 | Cell2 |\n\n",
         );
         let start_index_expectation = 67;
         let end_index_expectation = 74;

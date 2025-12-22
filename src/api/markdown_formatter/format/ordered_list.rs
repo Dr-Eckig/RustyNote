@@ -1,5 +1,5 @@
-use crate::api::markdown_formatter::textarea::Selection;
 use super::SelectionFormatter;
+use crate::api::markdown_formatter::textarea::Selection;
 use regex::Regex;
 
 /// Formatter that toggles markdown ordered lists for the selected lines.
@@ -27,14 +27,17 @@ pub struct OrderedList<'a> {
 impl<'a> OrderedList<'a> {
     /// Creates an ordered-list formatter for the given selection.
     pub fn new(selection: &'a Selection) -> OrderedList<'a> {
-        OrderedList {
-            selection,
-        }
+        OrderedList { selection }
     }
 
     fn apply_ordered_list_formatting(&self) -> (String, u32, u32) {
         let (block_start, block_end) = self.selection.line_bounds();
-        let lines: Vec<String> = self.selection.selected_lines().iter().map(|s| s.to_string()).collect();
+        let lines: Vec<String> = self
+            .selection
+            .selected_lines()
+            .iter()
+            .map(|s| s.to_string())
+            .collect();
 
         let is_formatted = self.is_already_formatted(&lines);
         let formatted = if is_formatted {
@@ -44,7 +47,9 @@ impl<'a> OrderedList<'a> {
         };
 
         let new_block = formatted.join("\n");
-        let new_text = self.selection.replace_range(block_start, block_end, &new_block);
+        let new_text = self
+            .selection
+            .replace_range(block_start, block_end, &new_block);
 
         let prefix_length: usize = 3;
         let line_count = lines.len();
@@ -72,24 +77,27 @@ impl<'a> OrderedList<'a> {
         }
 
         // Tests assert the relative span for multi-line removals; runtime keeps absolute caret positions.
-        let final_end = if cfg!(test) && is_formatted && !self.selection.is_empty() && line_count > 1 {
-            new_end.saturating_sub(self.selection.start_index)
-        } else {
-            new_end
-        };
+        let final_end =
+            if cfg!(test) && is_formatted && !self.selection.is_empty() && line_count > 1 {
+                new_end.saturating_sub(self.selection.start_index)
+            } else {
+                new_end
+            };
 
         (new_text, new_start as u32, final_end as u32)
     }
 
     fn remove_formatting(&self, lines: &[String]) -> Vec<String> {
         let re = Regex::new(r"^\s*\d+\.\s+").unwrap();
-        lines.iter()
+        lines
+            .iter()
             .map(|line| re.replace(line, "").to_string())
             .collect()
     }
 
     fn add_formatting(&self, lines: &[String]) -> Vec<String> {
-        lines.iter()
+        lines
+            .iter()
             .enumerate()
             .map(|(i, line)| format!("{}. {}", i + 1, line.trim_start()))
             .collect()
@@ -99,7 +107,6 @@ impl<'a> OrderedList<'a> {
         let re = Regex::new(r"^\s*\d+\.\s+").unwrap();
         lines.iter().all(|line| re.is_match(line))
     }
-
 }
 
 impl<'a> SelectionFormatter for OrderedList<'a> {
@@ -115,17 +122,12 @@ mod tests {
 
     #[test]
     fn test_insert_ordered_list_simple() {
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            OrderedList::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = OrderedList::new(&selection).format();
-
-        let text_expectation = String::from(
-            "1. "
-        );
+        let text_expectation = String::from("1. ");
         let start_index_expectation = 3;
         let end_index_expectation = 3;
 
@@ -136,17 +138,15 @@ mod tests {
 
     #[test]
     fn test_insert_ordered_list_with_caret_in_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I'm a selected text \nI'm not :("),
             10,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = OrderedList::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            OrderedList::new(&selection).format();
 
-        let text_expectation = String::from(
-            "1. I'm a selected text \nI'm not :("
-        );
+        let text_expectation = String::from("1. I'm a selected text \nI'm not :(");
         let start_index_expectation = 13;
         let end_index_expectation = 13;
 
@@ -157,17 +157,16 @@ mod tests {
 
     #[test]
     fn test_insert_ordered_list_with_caret_in_surrounded_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I am not selected. \nI'm a selected text \nI am also not selected."),
             20,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index): (String, u32, u32) = OrderedList::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index): (String, u32, u32) =
+            OrderedList::new(&selection).format();
 
-        let text_expectation = String::from(
-            "I am not selected. \n1. I'm a selected text \nI am also not selected."
-        );
+        let text_expectation =
+            String::from("I am not selected. \n1. I'm a selected text \nI am also not selected.");
         let start_index_expectation = 23;
         let end_index_expectation = 23;
 
@@ -178,17 +177,15 @@ mod tests {
 
     #[test]
     fn test_insert_ordered_list_with_one_selected_word() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nI'm not :("),
             Some(String::from("selected ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index): (String, u32, u32) = OrderedList::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index): (String, u32, u32) =
+            OrderedList::new(&selection).format();
 
-        let text_expectation = String::from(
-            "1. I'm a selected text \nI'm not :("
-        );
+        let text_expectation = String::from("1. I'm a selected text \nI'm not :(");
         let start_index_expectation = 9;
         let end_index_expectation = 18;
 
@@ -199,17 +196,15 @@ mod tests {
 
     #[test]
     fn test_insert_ordered_list_with_one_selected_line() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text"),
             Some(String::from("I'm a selected text")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = OrderedList::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            OrderedList::new(&selection).format();
 
-        let text_expectation = String::from(
-            "1. I'm a selected text"
-        );
+        let text_expectation = String::from("1. I'm a selected text");
         let start_index_expectation = 3;
         let end_index_expectation = 22;
 
@@ -220,17 +215,15 @@ mod tests {
 
     #[test]
     fn test_insert_ordered_list_with_two_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nMe too!"),
             Some(String::from("I'm a selected text \nMe too!")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = OrderedList::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            OrderedList::new(&selection).format();
 
-        let text_expectation = String::from(
-            "1. I'm a selected text \n2. Me too!"
-        );
+        let text_expectation = String::from("1. I'm a selected text \n2. Me too!");
         let start_index_expectation = 0;
         let end_index_expectation = 34;
 
@@ -241,16 +234,18 @@ mod tests {
 
     #[test]
     fn test_insert_ordered_list_with_surrounded_two_selected_lines() {
-
         let selection = Selection::new_with_text(
-            String::from("I am not selected. \nI'm a selected text \nMe too! \nI am also not selected."),
+            String::from(
+                "I am not selected. \nI'm a selected text \nMe too! \nI am also not selected.",
+            ),
             Some(String::from("I'm a selected text \nMe too! ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = OrderedList::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            OrderedList::new(&selection).format();
 
         let text_expectation = String::from(
-            "I am not selected. \n1. I'm a selected text \n2. Me too! \nI am also not selected."
+            "I am not selected. \n1. I'm a selected text \n2. Me too! \nI am also not selected.",
         );
         let start_index_expectation = 20;
         let end_index_expectation = 55;
@@ -262,17 +257,12 @@ mod tests {
 
     #[test]
     fn test_remove_ordered_list_simple() {
+        let selection = Selection::new_with_caret_position(String::from("1. Ordered List"), 15);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("1. Ordered List"),
-            15,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            OrderedList::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = OrderedList::new(&selection).format();
-
-        let text_expectation = String::from(
-            "Ordered List"
-        );
+        let text_expectation = String::from("Ordered List");
         let start_index_expectation = 12;
         let end_index_expectation = 12;
 
@@ -283,17 +273,15 @@ mod tests {
 
     #[test]
     fn test_remove_ordered_list_surrounded_line() {
-
         let selection = Selection::new_with_text(
             String::from("Hi! \n\n1. First Element\n2. Second Element\n\nBye!"),
-            Some(String::from("1. First Element\n2. Second Element"))
+            Some(String::from("1. First Element\n2. Second Element")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = OrderedList::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            OrderedList::new(&selection).format();
 
-        let text_expectation = String::from(
-            "Hi! \n\nFirst Element\nSecond Element\n\nBye!"
-        );
+        let text_expectation = String::from("Hi! \n\nFirst Element\nSecond Element\n\nBye!");
         let start_index_expectation = 6; // before "First"
         let end_index_expectation = 28; // after "Second Element"
 

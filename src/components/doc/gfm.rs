@@ -4,14 +4,13 @@ use crate::api::parser::Dialect;
 
 #[component]
 pub fn GitHubExtensionDoc() -> impl IntoView {
-
     let parsed_doc = Dialect::GitHub.parse_markdown_to_html(GFM_DOC);
 
     view! {
         <div class="content with-cropped-images">
-            <div  
+            <div
                 inner_html=parsed_doc
-            /> 
+            />
         </div>
     }
 }

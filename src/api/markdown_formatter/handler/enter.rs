@@ -23,7 +23,11 @@ use crate::api::markdown_formatter::textarea::{Selection, get_current_selection,
 pub fn handle_enter_for_lists() -> String {
     let selection = get_current_selection();
     let (new_text, new_cursor_position) = handle_enter_with_selection(selection);
-    set_cursor(new_text.clone(), new_cursor_position as u32, new_cursor_position as u32);
+    set_cursor(
+        new_text.clone(),
+        new_cursor_position as u32,
+        new_cursor_position as u32,
+    );
     new_text
 }
 
@@ -40,8 +44,12 @@ fn handle_enter_with_selection(selection: Selection) -> (String, usize) {
     }
 
     match ListType::detect(&line_info.trimmed_content) {
-        ListType::Numbered(number) => handle_numbered_list(text, cursor_byte_pos, &line_info, number),
-        ListType::Checkbox(marker) => handle_checkbox_list(text, cursor_byte_pos, &line_info, marker),
+        ListType::Numbered(number) => {
+            handle_numbered_list(text, cursor_byte_pos, &line_info, number)
+        }
+        ListType::Checkbox(marker) => {
+            handle_checkbox_list(text, cursor_byte_pos, &line_info, marker)
+        }
         ListType::Bullet(marker) => handle_bullet_list(text, cursor_byte_pos, &line_info, marker),
         ListType::None => insert_newline_at_cursor(text, cursor_byte_pos),
     }
@@ -158,7 +166,7 @@ struct NumberedListParser;
 impl NumberedListParser {
     fn parse(line: &str) -> Option<usize> {
         let digits_end = line.find(|c: char| !c.is_ascii_digit())?;
-        
+
         if digits_end == 0 {
             return None;
         }
@@ -174,7 +182,7 @@ impl NumberedListParser {
         let digits_end = line
             .find(|c: char| !c.is_ascii_digit())
             .unwrap_or(line.len());
-        
+
         if digits_end > 0 && line[digits_end..].starts_with(". ") {
             digits_end + 2
         } else {
@@ -188,13 +196,13 @@ struct CheckboxMarkerParser;
 impl CheckboxMarkerParser {
     fn parse(line: &str) -> Option<&str> {
         const MARKERS: &[&str] = &["- [ ] ", "- [x] ", "- [X] "];
-        
+
         for marker in MARKERS {
             if line.starts_with(marker) {
                 return Some(marker);
             }
         }
-        
+
         None
     }
 }
@@ -204,13 +212,13 @@ struct BulletMarkerParser;
 impl BulletMarkerParser {
     fn parse(line: &str) -> Option<&str> {
         const MARKERS: &[&str] = &["- ", "* "];
-        
+
         for marker in MARKERS {
             if line.starts_with(marker) {
                 return Some(marker);
             }
         }
-        
+
         None
     }
 }
@@ -225,7 +233,7 @@ fn has_content_after_marker(line: &str, marker_length: usize) -> bool {
     if marker_length >= line.len() {
         return false;
     }
-    
+
     line[marker_length..].trim().len() > 0
 }
 
@@ -236,12 +244,12 @@ fn insert_newline_at_cursor(text: &str, position: usize) -> (String, usize) {
 fn insert_text_at_position(text: &str, position: usize, insert: &str) -> (String, usize) {
     let clamped_pos = position.min(text.len());
     let safe_pos = find_safe_utf8_boundary(text, clamped_pos);
-    
+
     let mut new_text = String::with_capacity(text.len() + insert.len());
     new_text.push_str(&text[..safe_pos]);
     new_text.push_str(insert);
     new_text.push_str(&text[safe_pos..]);
-    
+
     (new_text, safe_pos + insert.len())
 }
 
@@ -249,21 +257,21 @@ fn remove_list_marker(text: &str, marker_start: usize, marker_length: usize) -> 
     let safe_start = find_safe_utf8_boundary(text, marker_start);
     let marker_end = (safe_start + marker_length).min(text.len());
     let safe_end = find_safe_utf8_boundary(text, marker_end);
-    
+
     let mut new_text = String::with_capacity(text.len().saturating_sub(safe_end - safe_start));
     new_text.push_str(&text[..safe_start]);
     new_text.push_str(&text[safe_end..]);
-    
+
     (new_text, safe_start)
 }
 
 fn find_safe_utf8_boundary(text: &str, position: usize) -> usize {
     let clamped = position.min(text.len());
-    
+
     if clamped == text.len() {
         return clamped;
     }
-    
+
     if !text.is_char_boundary(clamped) {
         for i in (0..clamped).rev() {
             if text.is_char_boundary(i) {
@@ -272,7 +280,7 @@ fn find_safe_utf8_boundary(text: &str, position: usize) -> usize {
         }
         return 0;
     }
-    
+
     clamped
 }
 

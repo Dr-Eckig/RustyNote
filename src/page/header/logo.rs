@@ -4,7 +4,6 @@ use crate::components::logo::Logo;
 
 #[component]
 pub fn LogoWithTitle() -> impl IntoView {
-    
     view! {
         <div class="is-flex is-justify-content-start is-align-items-center">
             <Logo />

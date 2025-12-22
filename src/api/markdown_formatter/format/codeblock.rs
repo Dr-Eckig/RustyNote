@@ -1,5 +1,5 @@
-use crate::api::markdown_formatter::textarea::Selection;
 use super::SelectionFormatter;
+use crate::api::markdown_formatter::textarea::Selection;
 
 /// Formatter that toggles fenced code blocks for the selected content.
 ///
@@ -44,7 +44,9 @@ impl<'a> CodeBlock<'a> {
 
         if self.selection.is_empty() {
             let current_line = self.selection.current_line();
-            if current_line.trim().is_empty() && self.selection.start_index == self.selection.textarea_value.len() {
+            if current_line.trim().is_empty()
+                && self.selection.start_index == self.selection.textarea_value.len()
+            {
                 let mut result = self.selection.textarea_value.clone();
                 if !result.ends_with('\n') {
                     result.push('\n');
@@ -307,13 +309,13 @@ impl<'a> CodeBlock<'a> {
             let search_end = (start + 1).min(text.len());
             text[..search_end].rfind("```")?
         };
-        
+
         let open = text[..close_start].rfind("```")?;
-        
+
         if open == close_start {
             return None;
         }
-        
+
         if open > start || close_start < end {
             return None;
         }
@@ -384,17 +386,12 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_simple() {
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "```\n\n```\n"
-        );
+        let text_expectation = String::from("```\n\n```\n");
         let start_index_expectation = 4;
         let end_index_expectation = 4;
 
@@ -405,17 +402,12 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_before_newline() {
+        let selection = Selection::new_with_caret_position(String::from("\n"), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("\n"),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "```\n\n```\n"
-        );
+        let text_expectation = String::from("```\n\n```\n");
         let start_index_expectation = 4;
         let end_index_expectation = 4;
 
@@ -426,17 +418,15 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_simple_with_text_in_textarea() {
-
         let selection = Selection::new_with_caret_position(
             String::from("Some text in the textarea. \n"),
             28, // Some text in the textarea. \n|
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let text_expectation = String::from(
-            "Some text in the textarea. \n```\n\n```\n"
-        );
+        let text_expectation = String::from("Some text in the textarea. \n```\n\n```\n");
         let start_index_expectation = 32;
         let end_index_expectation = 32;
 
@@ -447,17 +437,15 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_with_caret_in_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I'm a selected text \nI'm not :("),
             10,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let text_expectation = String::from(
-            "```\nI'm a selected text \n```\n\nI'm not :("
-        );
+        let text_expectation = String::from("```\nI'm a selected text \n```\n\nI'm not :(");
         let start_index_expectation = 5;
         let end_index_expectation = 5;
 
@@ -468,16 +456,16 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_with_caret_in_surrounded_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I am not selected. \nI'm a selected text \nI am also not selected."),
             21,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
         let text_expectation = String::from(
-            "I am not selected. \n\n```\nI'm a selected text \n```\n\nI am also not selected."
+            "I am not selected. \n\n```\nI'm a selected text \n```\n\nI am also not selected.",
         );
         let start_index_expectation = 24;
         let end_index_expectation = 24;
@@ -489,17 +477,15 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_with_one_selected_word() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nI'm not :("),
             Some(String::from("selected ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let text_expectation = String::from(
-            "I'm a \n```\nselected\n```\ntext \nI'm not :("
-        );
+        let text_expectation = String::from("I'm a \n```\nselected\n```\ntext \nI'm not :(");
         let start_index_expectation = 10;
         let end_index_expectation = 18;
 
@@ -510,17 +496,15 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_with_one_selected_line() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text"),
             Some(String::from("I'm a selected text")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let text_expectation = String::from(
-            "```\nI'm a selected text\n```\n"
-        );
+        let text_expectation = String::from("```\nI'm a selected text\n```\n");
         let start_index_expectation = 21;
         let end_index_expectation = 21;
 
@@ -531,17 +515,15 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_with_two_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nMe too!"),
-            Some(String::from("I'm a selected text \nMe too!")),  
+            Some(String::from("I'm a selected text \nMe too!")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let text_expectation = String::from(
-            "```\nI'm a selected text \nMe too!\n```\n"
-        );
+        let text_expectation = String::from("```\nI'm a selected text \nMe too!\n```\n");
         let start_index_expectation = 4;
         let end_index_expectation = 32;
 
@@ -552,16 +534,18 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_with_surrounded_two_selected_lines() {
-
         let selection = Selection::new_with_text(
-            String::from("I am not selected. \nI'm a selected text \nMe too! \nI am also not selected."),
+            String::from(
+                "I am not selected. \nI'm a selected text \nMe too! \nI am also not selected.",
+            ),
             Some(String::from("I'm a selected text \nMe too! ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
         let text_expectation = String::from(
-            "I am not selected. \n\n```\nI'm a selected text \nMe too! \n```\n\nI am also not selected."
+            "I am not selected. \n\n```\nI'm a selected text \nMe too! \n```\n\nI am also not selected.",
         );
         let start_index_expectation = 25;
         let end_index_expectation = 54;
@@ -573,17 +557,13 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_before_another_codeblock() {
+        let selection =
+            Selection::new_with_text(String::from("A\n\n```\nB\n```\n"), Some(String::from("A")));
 
-        let selection = Selection::new_with_text(
-            String::from("A\n\n```\nB\n```\n"),
-            Some(String::from("A")),
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "```\nA\n```\n\n```\nB\n```\n"
-        );
+        let text_expectation = String::from("```\nA\n```\n\n```\nB\n```\n");
         let start_index_expectation = 4;
         let end_index_expectation = 5;
 
@@ -594,17 +574,13 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_after_another_codeblock() {
+        let selection =
+            Selection::new_with_text(String::from("```\nA\n```\n\nB"), Some(String::from("B")));
 
-        let selection = Selection::new_with_text(
-            String::from("```\nA\n```\n\nB"),
-            Some(String::from("B")),
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "```\nA\n```\n\n```\nB\n```\n"
-        );
+        let text_expectation = String::from("```\nA\n```\n\n```\nB\n```\n");
         let start_index_expectation = 15;
         let end_index_expectation = 16;
 
@@ -615,17 +591,12 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_directly_before_another_codeblock() {
+        let selection = Selection::new_with_caret_position(String::from("```\nA\n```"), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("```\nA\n```"),
-            0
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "```\n\n```\n```\nA\n```\n"
-        );
+        let text_expectation = String::from("```\n\n```\n```\nA\n```\n");
         let start_index_expectation = 4;
         let end_index_expectation = 4;
 
@@ -636,17 +607,12 @@ mod tests {
 
     #[test]
     fn test_insert_codeblock_directly_after_another_codeblock() {
+        let selection = Selection::new_with_caret_position(String::from("```\nA\n```"), 9);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("```\nA\n```"),
-            9
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "```\nA\n```\n```\n\n```\n"
-        );
+        let text_expectation = String::from("```\nA\n```\n```\n\n```\n");
         let start_index_expectation = 14;
         let end_index_expectation = 14;
 
@@ -657,39 +623,33 @@ mod tests {
 
     #[test]
     fn text_insert_code_block_after_codeblock() {
-
         let selection = Selection::new_with_text(
             String::from("```\nLet me be\n```\n\nMake me a Codeblock!"),
             Some(String::from("Make me a Codeblock!")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let text_expectation = String::from(
-            "```\nLet me be\n```\n\n```\nMake me a Codeblock!\n```\n"
-        );
+        let text_expectation =
+            String::from("```\nLet me be\n```\n\n```\nMake me a Codeblock!\n```\n");
         let start_index_expectation = 23;
         let end_index_expectation = 43;
 
         assert_eq!(formatted_text, text_expectation);
         assert_eq!(caret_start_index, start_index_expectation);
         assert_eq!(caret_end_index, end_index_expectation);
-
     }
 
     #[test]
     fn text_insert_code_block_before_codeblock() {
+        let selection =
+            Selection::new_with_text(String::from("A\n\n```\nB\n```\n"), Some(String::from("A")));
 
-        let selection = Selection::new_with_text(
-            String::from("A\n\n```\nB\n```\n"),
-            Some(String::from("A")),
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "```\nA\n```\n\n```\nB\n```\n"
-        );
+        let text_expectation = String::from("```\nA\n```\n\n```\nB\n```\n");
         let start_index_expectation = 4;
         let end_index_expectation = 5;
 
@@ -700,17 +660,12 @@ mod tests {
 
     #[test]
     fn test_remove_block_prefix_simple() {
+        let selection = Selection::new_with_caret_position(String::from("```\nCodeBlock\n```"), 8);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("```\nCodeBlock\n```"),
-            8
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "CodeBlock"
-        );
+        let text_expectation = String::from("CodeBlock");
         let start_index_expectation = 4;
         let end_index_expectation = 4;
 
@@ -721,17 +676,13 @@ mod tests {
 
     #[test]
     fn test_remove_block_prefix_with_sourrounded_block() {
+        let selection =
+            Selection::new_with_caret_position(String::from("Hi! \n```\nCodeBlock\n```\nBye!"), 13);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("Hi! \n```\nCodeBlock\n```\nBye!"),
-            13
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
-
-        let text_expectation = String::from(
-            "Hi! CodeBlock Bye!"
-        );
+        let text_expectation = String::from("Hi! CodeBlock Bye!");
         let start_index_expectation = 8;
         let end_index_expectation = 8;
 
@@ -742,17 +693,15 @@ mod tests {
 
     #[test]
     fn test_remove_block_prefix_with_sourrounded_block_2() {
-
         let selection = Selection::new_with_caret_position(
             String::from("Hi! \n\n```\nCodeBlock\n```\n\nBye!"),
-            14
+            14,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = CodeBlock::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            CodeBlock::new(&selection).format();
 
-        let text_expectation = String::from(
-            "Hi! \nCodeBlock \nBye!"
-        );
+        let text_expectation = String::from("Hi! \nCodeBlock \nBye!");
         let start_index_expectation = 9;
         let end_index_expectation = 9;
 

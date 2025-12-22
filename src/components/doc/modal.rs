@@ -1,21 +1,24 @@
 use leptos::{html::Div, prelude::*};
 use leptos_use::on_click_outside;
 
-use crate::components::{Color, Size, button::Button, doc::{commonmark::CommonMarkDoc, gfm::GitHubExtensionDoc, rustynote::RustyNoteDoc}, icons::Icon, tabs::{Tab, Tabs}};
+use crate::components::{
+    Color, Size,
+    button::Button,
+    doc::{commonmark::CommonMarkDoc, gfm::GitHubExtensionDoc, rustynote::RustyNoteDoc},
+    icons::Icon,
+    tabs::{Tab, Tabs},
+};
 
 #[component]
 pub fn HelpModal(
-    #[prop(into, default=Signal::from(false))] is_dropdown_item: Signal<bool>,
-    #[prop(default=false)] fullsize_button: bool,
+    #[prop(into, default = Signal::from(false))] is_dropdown_item: Signal<bool>,
+    #[prop(default = false)] fullsize_button: bool,
 ) -> impl IntoView {
-
     let active_tab = RwSignal::new(0);
     let modal_visible = RwSignal::new(false);
 
     let modal_area = NodeRef::<Div>::new();
-    let _ = on_click_outside(modal_area, move |_| {
-        modal_visible.set(false)
-    });
+    let _ = on_click_outside(modal_area, move |_| modal_visible.set(false));
 
     view! {
         <Button
@@ -47,7 +50,7 @@ pub fn HelpModal(
                     }
                 </section>
                 <footer class="modal-card-foot">
-                    <Tabs 
+                    <Tabs
                         active_tab=active_tab
                         tabs=vec![
                             Tab { name: String::from("RustyNote"), icon: Icon::Info },

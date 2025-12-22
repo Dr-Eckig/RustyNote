@@ -2,15 +2,19 @@ use leptoaster::expect_toaster;
 use leptos::prelude::*;
 use leptos_use::{UseClipboardReturn, use_clipboard};
 
-use crate::components::{Color, Size, State, button::Button, icons::Icon, tooltip::{Tooltip, TooltipDirection}};
+use crate::components::{
+    Color, Size, State,
+    button::Button,
+    icons::Icon,
+    tooltip::{Tooltip, TooltipDirection},
+};
 
 #[component]
-pub fn CopyButton(
-    markdown: ReadSignal<String>,
-) -> impl IntoView {
+pub fn CopyButton(markdown: ReadSignal<String>) -> impl IntoView {
+    let UseClipboardReturn {
+        is_supported, copy, ..
+    } = use_clipboard();
 
-    let UseClipboardReturn { is_supported, copy, .. } = use_clipboard();
-    
     let toaster = expect_toaster();
 
     let copy_to_clipboard = move || {
@@ -18,15 +22,15 @@ pub fn CopyButton(
         copy(&content);
         toaster.success("Markdown copied to clipboard!");
     };
-    
+
     view! {
-        <DesktopCopyButton 
-            is_supported=is_supported 
-            copy_to_clipboard=copy_to_clipboard.clone() 
+        <DesktopCopyButton
+            is_supported=is_supported
+            copy_to_clipboard=copy_to_clipboard.clone()
         />
-        <TouchDeviceCopyButton 
-            is_supported=is_supported 
-            copy_to_clipboard 
+        <TouchDeviceCopyButton
+            is_supported=is_supported
+            copy_to_clipboard
         />
     }
 }
@@ -36,15 +40,14 @@ fn DesktopCopyButton(
     is_supported: Signal<bool>,
     copy_to_clipboard: impl Fn() + Send + 'static,
 ) -> impl IntoView {
-    
     view! {
         <div class="is-hidden-touch">
             <Tooltip text=Signal::derive(move || if is_supported.get() { "Copy to Clipboard" } else { "Your Browser does not support copying" }) direction=TooltipDirection::Right>
-                <Button 
+                <Button
                     aria_label=String::from("Copy to Clipboard")
                     icon=Icon::Copy
                     color=Color::White
-                    size=Size::Small 
+                    size=Size::Small
                     state=Signal::derive(move || if is_supported.get() { State::Normal } else { State::Disabled })
                     on_click=move || copy_to_clipboard()
                 />
@@ -58,10 +61,9 @@ fn TouchDeviceCopyButton(
     is_supported: Signal<bool>,
     copy_to_clipboard: impl Fn() + 'static,
 ) -> impl IntoView {
-    
     view! {
         <div class="is-hidden-desktop">
-            <Button 
+            <Button
                 aria_label=String::from("Copy to Clipboard")
                 text="Copy Markdown"
                 icon=Icon::Copy

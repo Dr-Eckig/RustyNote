@@ -1,17 +1,22 @@
+use crate::components::{
+    Color, Size, State,
+    button::Button,
+    icons::Icon,
+    tooltip::{Tooltip, TooltipDirection},
+};
 use leptos::prelude::*;
-
-use crate::components::{Color, Size, State, button::Button, icons::Icon, tooltip::{Tooltip, TooltipDirection}};
 
 #[component]
 pub fn FormatTablesButton(
     markdown: RwSignal<String>,
-    #[prop(into)] tooltip_direction: Signal<TooltipDirection>
+    #[prop(into)] tooltip_direction: Signal<TooltipDirection>,
 ) -> impl IntoView {
-
     let state = Signal::derive(move || {
-        if contains_markdown_table(&markdown.get()) { 
-            State::Normal 
-        } else { State::Disabled }
+        if contains_markdown_table(&markdown.get()) {
+            State::Normal
+        } else {
+            State::Disabled
+        }
     });
 
     let tooltip = Signal::derive(move || {
@@ -21,10 +26,10 @@ pub fn FormatTablesButton(
             String::from("❌ This option will be enabled when a markdown table is inserted")
         }
     });
-    
+
     view! {
         <Tooltip text=tooltip direction=tooltip_direction>
-            <Button 
+            <Button
                 aria_label=String::from("Format Tables")
                 text="Format Tables"
                 icon=Icon::AlignJusitify
@@ -53,7 +58,9 @@ fn contains_markdown_table(md: &str) -> bool {
             in_code_block = !in_code_block;
             continue;
         }
-        if in_code_block { continue; }
+        if in_code_block {
+            continue;
+        }
 
         if is_table_header(line) && i + 1 < lines.len() && is_table_divider(lines[i + 1]) {
             return true;
@@ -70,6 +77,8 @@ fn is_table_header(line: &str) -> bool {
 
 fn is_table_divider(line: &str) -> bool {
     let l = line.trim();
-    if !l.contains('-') || !l.contains('|') { return false; }
+    if !l.contains('-') || !l.contains('|') {
+        return false;
+    }
     l.chars().all(|c| matches!(c, '-' | ':' | '|' | ' ' | '\t'))
 }

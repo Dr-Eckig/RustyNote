@@ -19,9 +19,7 @@ where
 
     let signal = RwSignal::new(stored.get());
 
-    Effect::new(move || {
-        set_stored.set(signal.get())
-    });
+    Effect::new(move || set_stored.set(signal.get()));
 
     signal
 }

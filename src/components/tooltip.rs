@@ -24,9 +24,8 @@ pub fn Tooltip(
     #[prop(into)] text: Signal<String>,
     #[prop(into, default=Signal::from(TooltipDirection::Left))] direction: Signal<TooltipDirection>,
     #[prop(default=Signal::from(false))] is_hidden: Signal<bool>,
-    children: Children
+    children: Children,
 ) -> impl IntoView {
-
     let is_hidden = move || is_hidden.get() || text.get().is_empty();
 
     view! {

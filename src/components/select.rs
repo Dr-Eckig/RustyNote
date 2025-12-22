@@ -1,5 +1,5 @@
-use leptos::prelude::*;
 use crate::components::icons::Icon;
+use leptos::prelude::*;
 
 #[component]
 pub fn Select(
@@ -8,7 +8,6 @@ pub fn Select(
     #[prop(into)] prop_value: Signal<String>,
     on_change: impl Fn(String) + 'static,
 ) -> impl IntoView {
-    
     view! {
         <div class="control" class:has-icons-left=move || icon.is_some()>
             <div class="select is-full-size">
@@ -31,7 +30,7 @@ pub fn Select(
                 </select>
             </div>
             {
-                icon.map(|icon| { move || 
+                icon.map(|icon| { move ||
                     view! {
                         <span class="icon is-left">
                             <i class=icon.get().as_fontawesome() />

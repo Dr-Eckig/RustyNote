@@ -1,8 +1,11 @@
 use leptos::prelude::*;
 
-use crate::{components::{button::format_tables::FormatTablesButton, tooltip::TooltipDirection}, page::editor::controls::tablet::format_buttons::EditTextButtons};
-use crate::api::parser::Dialect;
 use crate::Mode;
+use crate::api::parser::Dialect;
+use crate::{
+    components::{button::format_tables::FormatTablesButton, tooltip::TooltipDirection},
+    page::editor::controls::tablet::format_buttons::EditTextButtons,
+};
 
 mod format_buttons;
 
@@ -12,7 +15,6 @@ pub fn TabletControls(
     parser: RwSignal<Dialect>,
     mode: RwSignal<Mode>,
 ) -> impl IntoView {
-    
     view! {
         <div class="controls-container is-hidden-desktop is-hidden-mobile">
             <div class="is-flex is-justify-content-end py-3">

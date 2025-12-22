@@ -1,21 +1,16 @@
 use crate::api::markdown_formatter::textarea::{get_current_selection, set_cursor};
 
-mod inline;
 mod block_prefix;
-mod heading;
 mod codeblock;
+mod heading;
+mod horizontal_rule;
+mod inline;
 mod ordered_list;
 mod table;
-mod horizontal_rule;
 
 pub use self::{
-    block_prefix::BlockPrefix,
-    codeblock::CodeBlock,
-    heading::Heading,
-    horizontal_rule::HorizontalRule,
-    inline::Inline,
-    ordered_list::OrderedList,
-    table::Table,
+    block_prefix::BlockPrefix, codeblock::CodeBlock, heading::Heading,
+    horizontal_rule::HorizontalRule, inline::Inline, ordered_list::OrderedList, table::Table,
 };
 
 /// Shared interface implemented by every formatter.
@@ -52,12 +47,11 @@ pub enum TextFormattingType {
     Heading,
     CodeBlock,
     OrderedList,
-    Table, 
+    Table,
     HorizontalRule,
 }
 
 impl TextFormattingType {
-
     /// Applies the formatter represented by the enum variant to the current textarea selection.
     ///
     /// ```rust,ignore
@@ -68,7 +62,6 @@ impl TextFormattingType {
     /// assert!(!formatted.is_empty());
     /// ```
     pub fn apply_text_formatting(&self) -> String {
-
         let selection = get_current_selection();
 
         let (new_value, new_sel_start, new_sel_end) = match self {
@@ -80,25 +73,15 @@ impl TextFormattingType {
                 BlockPrefix::new(&selection, prefix).format()
             }
 
-            TextFormattingType::Heading => {
-                Heading::new(&selection).format()
-            }
+            TextFormattingType::Heading => Heading::new(&selection).format(),
 
-            TextFormattingType::CodeBlock => {
-                CodeBlock::new(&selection).format()
-            }
+            TextFormattingType::CodeBlock => CodeBlock::new(&selection).format(),
 
-            TextFormattingType::HorizontalRule => {
-                HorizontalRule::new(&selection).format()
-            }
+            TextFormattingType::HorizontalRule => HorizontalRule::new(&selection).format(),
 
-            TextFormattingType::OrderedList => {
-                OrderedList::new(&selection).format()
-            }
+            TextFormattingType::OrderedList => OrderedList::new(&selection).format(),
 
-            TextFormattingType::Table => {
-                Table::new(&selection).format()
-            }
+            TextFormattingType::Table => Table::new(&selection).format(),
         };
 
         set_cursor(new_value, new_sel_start, new_sel_end)

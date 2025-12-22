@@ -1,5 +1,5 @@
-use crate::api::markdown_formatter::textarea::Selection;
 use super::SelectionFormatter;
+use crate::api::markdown_formatter::textarea::Selection;
 
 /// Formatter that toggles inline markdown markers such as `**` or `_`.
 ///
@@ -27,7 +27,6 @@ pub struct Inline<'a> {
 }
 
 impl<'a> Inline<'a> {
-
     /// Creates a formatter that wraps the selection with the given prefix and suffix.
     pub fn new(selection: &'a Selection, prefix: &'static str, suffix: &'static str) -> Inline<'a> {
         Inline {
@@ -52,7 +51,8 @@ impl<'a> Inline<'a> {
             (self.selection.start_index, self.selection.end_index)
         };
 
-        while end > start && self.selection.textarea_value.as_bytes()[end - 1].is_ascii_whitespace() {
+        while end > start && self.selection.textarea_value.as_bytes()[end - 1].is_ascii_whitespace()
+        {
             end -= 1;
         }
 
@@ -87,7 +87,9 @@ impl<'a> Inline<'a> {
         if start >= self.prefix.len() && &text[start - self.prefix.len()..start] == self.prefix {
             start -= self.prefix.len();
         }
-        if end + self.suffix.len() <= text.len() && &text[end..end + self.suffix.len()] == self.suffix {
+        if end + self.suffix.len() <= text.len()
+            && &text[end..end + self.suffix.len()] == self.suffix
+        {
             end += self.suffix.len();
         }
 
@@ -115,14 +117,9 @@ impl<'a> Inline<'a> {
         let start = self.selection.start_index;
         let end = self.selection.end_index;
 
-        let inner = &t[start + self.prefix.len() .. end - self.suffix.len()];
+        let inner = &t[start + self.prefix.len()..end - self.suffix.len()];
 
-        let new_text = format!(
-            "{}{}{}",
-            &t[..start],
-            inner,
-            &t[end..],
-        );
+        let new_text = format!("{}{}{}", &t[..start], inner, &t[end..],);
 
         let new_start = start as u32;
         let new_end = (start + inner.len()) as u32;
@@ -133,11 +130,13 @@ impl<'a> Inline<'a> {
         let text = &self.selection.textarea_value;
         let cursor = self.selection.start_index;
 
-        let start = text[..cursor].rfind(|c: char| c.is_whitespace())
+        let start = text[..cursor]
+            .rfind(|c: char| c.is_whitespace())
             .map(|i| i + 1)
             .unwrap_or(0);
 
-        let end = text[cursor..].find(|c: char| c.is_whitespace())
+        let end = text[cursor..]
+            .find(|c: char| c.is_whitespace())
             .map(|i| cursor + i)
             .unwrap_or(text.len());
 
@@ -191,12 +190,7 @@ impl<'a> Inline<'a> {
         let real_start = start - self.prefix.len();
         let real_end = end + self.suffix.len();
 
-        let new_text = format!(
-            "{}{}{}",
-            &t[..real_start],
-            &t[start..end],
-            &t[real_end..],
-        );
+        let new_text = format!("{}{}{}", &t[..real_start], &t[start..end], &t[real_end..],);
 
         let cursor = self.selection.start_index;
 
@@ -246,28 +240,28 @@ impl<'a> Inline<'a> {
                 let trailing_spaces = &l[trimmed_end.len()..];
                 format!(
                     "{}{}{}{}{}",
-                    "",
-                    self.prefix,
-                    trimmed_end,
-                    self.suffix,
-                    trailing_spaces
+                    "", self.prefix, trimmed_end, self.suffix, trailing_spaces
                 )
             })
             .collect()
     }
 
     fn remove_inline(&self, lines: &[&str]) -> Vec<String> {
-        lines.iter().map(|l| {
-            let trimmed_end = l.trim_end();
-            let trailing_spaces = &l[trimmed_end.len()..];
+        lines
+            .iter()
+            .map(|l| {
+                let trimmed_end = l.trim_end();
+                let trailing_spaces = &l[trimmed_end.len()..];
 
-            if trimmed_end.starts_with(self.prefix) && trimmed_end.ends_with(self.suffix) {
-                let inner = &trimmed_end[self.prefix.len().. trimmed_end.len() - self.suffix.len()];
-                format!("{}{}", inner, trailing_spaces)
-            } else {
-                (*l).to_string()
-            }
-        }).collect()
+                if trimmed_end.starts_with(self.prefix) && trimmed_end.ends_with(self.suffix) {
+                    let inner =
+                        &trimmed_end[self.prefix.len()..trimmed_end.len() - self.suffix.len()];
+                    format!("{}{}", inner, trailing_spaces)
+                } else {
+                    (*l).to_string()
+                }
+            })
+            .collect()
     }
 }
 
@@ -284,17 +278,12 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_simple() {
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
-
-        let text_expectation = String::from(
-            "****"
-        );
+        let text_expectation = String::from("****");
         let start_index_expectation = 2;
         let end_index_expectation = 2;
 
@@ -305,17 +294,12 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_different_prefix_and_suffix_simple() {
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "![", "](url)").format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "![", "](url)").format();
-
-        let text_expectation = String::from(
-            "![](url)"
-        );
+        let text_expectation = String::from("![](url)");
         let start_index_expectation = 2;
         let end_index_expectation = 2;
 
@@ -326,17 +310,15 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_with_caret_in_word() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I'm a selected text \nI'm not :("),
             10,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let text_expectation = String::from(
-            "I'm a **selected** text \nI'm not :("
-        );
+        let text_expectation = String::from("I'm a **selected** text \nI'm not :(");
         let start_index_expectation = 12;
         let end_index_expectation = 12;
 
@@ -347,17 +329,15 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_different_prefix_and_suffix_with_caret_in_word() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I'm a selected text \nI'm not :("),
             10,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "![", "](url)").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "![", "](url)").format();
 
-        let text_expectation = String::from(
-            "I'm a ![selected](url) text \nI'm not :("
-        );
+        let text_expectation = String::from("I'm a ![selected](url) text \nI'm not :(");
         let start_index_expectation = 12;
         let end_index_expectation = 12;
 
@@ -368,17 +348,16 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_with_caret_in_surrounded_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I am not selected. \nI'm a selected text \nI am also not selected."),
             20,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let text_expectation = String::from(
-            "I am not selected. \n**I'm** a selected text \nI am also not selected."
-        );
+        let text_expectation =
+            String::from("I am not selected. \n**I'm** a selected text \nI am also not selected.");
         let start_index_expectation = 22;
         let end_index_expectation = 22;
 
@@ -389,17 +368,15 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_with_one_selected_word() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nI'm not :("),
             Some(String::from("selected ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let text_expectation = String::from(
-            "I'm a **selected** text \nI'm not :("
-        );
+        let text_expectation = String::from("I'm a **selected** text \nI'm not :(");
         let start_index_expectation = 8;
         let end_index_expectation = 16;
 
@@ -410,17 +387,15 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_with_one_selected_line() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text"),
             Some(String::from("I'm a selected text")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let text_expectation = String::from(
-            "**I'm a selected text**"
-        );
+        let text_expectation = String::from("**I'm a selected text**");
         let start_index_expectation = 2;
         let end_index_expectation = 21;
 
@@ -431,17 +406,15 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_with_two_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nMe too!"),
-            Some(String::from("I'm a selected text \nMe too!")),  
+            Some(String::from("I'm a selected text \nMe too!")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let text_expectation = String::from(
-            "**I'm a selected text** \n**Me too!**"
-        );
+        let text_expectation = String::from("**I'm a selected text** \n**Me too!**");
         let start_index_expectation = 0;
         let end_index_expectation = 36;
 
@@ -452,16 +425,18 @@ mod tests {
 
     #[test]
     fn test_insert_inline_format_with_surrounded_two_selected_lines() {
-
         let selection = Selection::new_with_text(
-            String::from("I am not selected. \nI'm a selected text \nMe too! \nI am also not selected."),
+            String::from(
+                "I am not selected. \nI'm a selected text \nMe too! \nI am also not selected.",
+            ),
             Some(String::from("I'm a selected text \nMe too! ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
         let text_expectation = String::from(
-            "I am not selected. \n**I'm a selected text** \n**Me too!** \nI am also not selected."
+            "I am not selected. \n**I'm a selected text** \n**Me too!** \nI am also not selected.",
         );
         let start_index_expectation = 20;
         let end_index_expectation = 57;
@@ -473,17 +448,12 @@ mod tests {
 
     #[test]
     fn test_remove_inline_format_simple() {
+        let selection = Selection::new_with_caret_position(String::from("**Bold**"), 4);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("**Bold**"),
-            4
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
-
-        let text_expectation = String::from(
-            "Bold"
-        );
+        let text_expectation = String::from("Bold");
         let start_index_expectation = 2;
         let end_index_expectation = 2;
 
@@ -494,17 +464,12 @@ mod tests {
 
     #[test]
     fn test_remove_inline_format_with_caret_in_formatted_line() {
+        let selection = Selection::new_with_caret_position(String::from("**Bold Text**"), 4);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("**Bold Text**"),
-            4
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
-
-        let text_expectation = String::from(
-            "****Bold** Text**"
-        );
+        let text_expectation = String::from("****Bold** Text**");
         let start_index_expectation = 6;
         let end_index_expectation = 6;
 
@@ -515,17 +480,12 @@ mod tests {
 
     #[test]
     fn test_remove_inline_format_with_caret_in_formatted_line_2() {
+        let selection = Selection::new_with_caret_position(String::from("**Bold Text Test**"), 9);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("**Bold Text Test**"),
-            9
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
-
-        let text_expectation = String::from(
-            "**Bold **Text** Test**"
-        );
+        let text_expectation = String::from("**Bold **Text** Test**");
         let start_index_expectation = 11;
         let end_index_expectation = 11;
 
@@ -536,17 +496,15 @@ mod tests {
 
     #[test]
     fn test_remove_inline_format_with_selected_formatted_line() {
-
         let selection = Selection::new_with_text(
             String::from("**Bold Text**"),
             Some(String::from("Bold Text")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let text_expectation = String::from(
-            "Bold Text"
-        );
+        let text_expectation = String::from("Bold Text");
         let start_index_expectation = 0;
         let end_index_expectation = 9;
 
@@ -557,17 +515,15 @@ mod tests {
 
     #[test]
     fn test_remove_inline_format_with_selected_formatted_line_and_prefix_suffix() {
-
         let selection = Selection::new_with_text(
             String::from("**Bold Text**"),
             Some(String::from("**Bold Text**")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Inline::new(&selection, "**", "**").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Inline::new(&selection, "**", "**").format();
 
-        let text_expectation = String::from(
-            "Bold Text"
-        );
+        let text_expectation = String::from("Bold Text");
         let start_index_expectation = 0;
         let end_index_expectation = 9;
 

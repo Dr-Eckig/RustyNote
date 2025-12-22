@@ -1,5 +1,8 @@
-use crate::api::markdown_formatter::{combine_text_slices, textarea::{Selection, line_end_at}};
 use super::SelectionFormatter;
+use crate::api::markdown_formatter::{
+    combine_text_slices,
+    textarea::{Selection, line_end_at},
+};
 
 /// Formatter that inserts or removes a horizontal rule beneath the selection.
 ///
@@ -26,9 +29,7 @@ pub struct HorizontalRule<'a> {
 impl<'a> HorizontalRule<'a> {
     /// Creates a formatter that inserts a horizontal rule after the selection.
     pub fn new(selection: &'a Selection) -> HorizontalRule<'a> {
-        HorizontalRule {
-            selection,
-        }
+        HorizontalRule { selection }
     }
 
     fn apply_horizontal_rule_formatting(&self) -> (String, u32, u32) {
@@ -53,11 +54,7 @@ impl<'a> HorizontalRule<'a> {
         after_insert: &str,
     ) -> (String, u32, u32) {
         let new_text = combine_text_slices(
-            vec![
-                before_insert,
-                &hr_block,
-                after_insert,
-            ],
+            vec![before_insert, &hr_block, after_insert],
             before_insert.len() + hr_block.len() + after_insert.len(),
         );
 
@@ -145,17 +142,12 @@ mod tests {
 
     #[test]
     fn test_insert_horizontal_rule_simple() {
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            HorizontalRule::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = HorizontalRule::new(&selection).format();
-
-        let text_expectation = String::from(
-            "---\n\n"
-        );
+        let text_expectation = String::from("---\n\n");
         let start_index_expectation = 5;
         let end_index_expectation = 5;
 
@@ -166,17 +158,15 @@ mod tests {
 
     #[test]
     fn test_insert_horizontal_rule_with_caret_in_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I'm a selected text \nI'm not :("),
             10,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = HorizontalRule::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            HorizontalRule::new(&selection).format();
 
-        let text_expectation = String::from(
-            "I'm a selected text \n\n---\n\nI'm not :("
-        );
+        let text_expectation = String::from("I'm a selected text \n\n---\n\nI'm not :(");
         let start_index_expectation = 10;
         let end_index_expectation = 10;
 
@@ -187,16 +177,16 @@ mod tests {
 
     #[test]
     fn test_insert_horizontal_rule_with_caret_in_surrounded_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I am not selected. \nI'm a selected text \nI am also not selected."),
             20,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = HorizontalRule::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            HorizontalRule::new(&selection).format();
 
         let text_expectation = String::from(
-            "I am not selected. \nI'm a selected text \n\n---\n\nI am also not selected."
+            "I am not selected. \nI'm a selected text \n\n---\n\nI am also not selected.",
         );
         let start_index_expectation = 20;
         let end_index_expectation = 20;
@@ -208,17 +198,15 @@ mod tests {
 
     #[test]
     fn test_insert_horizontal_rule_with_one_selected_word() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nI'm not :("),
             Some(String::from("selected ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = HorizontalRule::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            HorizontalRule::new(&selection).format();
 
-        let text_expectation = String::from(
-            "I'm a selected text \n\n---\n\nI'm not :("
-        );
+        let text_expectation = String::from("I'm a selected text \n\n---\n\nI'm not :(");
         let start_index_expectation = 6;
         let end_index_expectation = 15;
 
@@ -229,17 +217,15 @@ mod tests {
 
     #[test]
     fn test_insert_horizontal_rule_with_one_selected_line() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text"),
             Some(String::from("I'm a selected text")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = HorizontalRule::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            HorizontalRule::new(&selection).format();
 
-        let text_expectation = String::from(
-            "I'm a selected text\n\n---\n\n"
-        );
+        let text_expectation = String::from("I'm a selected text\n\n---\n\n");
         let start_index_expectation = 0;
         let end_index_expectation = 19;
 
@@ -250,17 +236,15 @@ mod tests {
 
     #[test]
     fn test_insert_horizontal_rule_with_two_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nMe too!"),
-            Some(String::from("I'm a selected text \nMe too!")),  
+            Some(String::from("I'm a selected text \nMe too!")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = HorizontalRule::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            HorizontalRule::new(&selection).format();
 
-        let text_expectation = String::from(
-            "I'm a selected text \nMe too!\n\n---\n\n"
-        );
+        let text_expectation = String::from("I'm a selected text \nMe too!\n\n---\n\n");
         let start_index_expectation = 0;
         let end_index_expectation = 28;
 
@@ -271,16 +255,18 @@ mod tests {
 
     #[test]
     fn test_insert_horizontal_rule_with_surrounded_two_selected_lines() {
-
         let selection = Selection::new_with_text(
-            String::from("I am not selected. \nI'm a selected text \nMe too! \nI am also not selected."),
+            String::from(
+                "I am not selected. \nI'm a selected text \nMe too! \nI am also not selected.",
+            ),
             Some(String::from("I'm a selected text \nMe too! ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = HorizontalRule::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            HorizontalRule::new(&selection).format();
 
         let text_expectation = String::from(
-            "I am not selected. \nI'm a selected text \nMe too! \n\n---\n\nI am also not selected."
+            "I am not selected. \nI'm a selected text \nMe too! \n\n---\n\nI am also not selected.",
         );
         let start_index_expectation = 20;
         let end_index_expectation = 49;

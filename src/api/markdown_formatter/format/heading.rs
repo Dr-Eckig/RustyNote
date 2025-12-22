@@ -1,5 +1,5 @@
-use crate::api::markdown_formatter::textarea::Selection;
 use super::SelectionFormatter;
+use crate::api::markdown_formatter::textarea::Selection;
 
 /// Formatter that cycles through markdown heading levels for the selected lines.
 ///
@@ -34,10 +34,7 @@ impl<'a> Heading<'a> {
         let (line_start, line_end) = selection.line_bounds();
         let lines = selection.selected_lines();
 
-        let new_lines: Vec<String> = lines
-            .iter()
-            .map(|line| self.toggle_heading(line))
-            .collect();
+        let new_lines: Vec<String> = lines.iter().map(|line| self.toggle_heading(line)).collect();
 
         let new_block = new_lines.join("\n");
         let new_text = selection.replace_range(line_start, line_end, &new_block);
@@ -74,7 +71,11 @@ impl<'a> Heading<'a> {
         let first_line = selected_lines.first().unwrap_or(&"");
         let trimmed = first_line.trim_start();
         let old_hash_count = trimmed.chars().take_while(|&c| c == '#').count();
-        let new_hash_count = if old_hash_count >= 5 { 1 } else { old_hash_count + 1 };
+        let new_hash_count = if old_hash_count >= 5 {
+            1
+        } else {
+            old_hash_count + 1
+        };
 
         let prefix_delta = if new_hash_count == 1 && old_hash_count == 5 {
             -(old_hash_count as isize - 1)
@@ -94,10 +95,9 @@ impl<'a> Heading<'a> {
                 adjust(selection.start_index) as usize,
                 adjust(selection.end_index) as usize,
             ),
-            Some(_) if selection.start_index == line_start && selection.end_index == line_end => (
-                line_start,
-                line_start + new_block.len(),
-            ),
+            Some(_) if selection.start_index == line_start && selection.end_index == line_end => {
+                (line_start, line_start + new_block.len())
+            }
             Some(_) => (
                 adjust(selection.start_index) as usize,
                 adjust(selection.end_index) as usize,
@@ -121,17 +121,12 @@ mod tests {
 
     #[test]
     fn test_insert_heading_simple() {
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
-
-        let text_expectation = String::from(
-            "# "
-        );
+        let text_expectation = String::from("# ");
         let start_index_expectation = 2;
         let end_index_expectation = 2;
 
@@ -142,17 +137,15 @@ mod tests {
 
     #[test]
     fn test_insert_heading_with_caret_in_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I'm a selected text \nI'm not :("),
             10,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let text_expectation = String::from(
-            "# I'm a selected text \nI'm not :("
-        );
+        let text_expectation = String::from("# I'm a selected text \nI'm not :(");
         let start_index_expectation = 12;
         let end_index_expectation = 12;
 
@@ -163,17 +156,16 @@ mod tests {
 
     #[test]
     fn test_insert_heading_with_caret_in_surrounded_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I am not selected. \nI'm a selected text \nI am also not selected."),
             20,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let text_expectation = String::from(
-            "I am not selected. \n# I'm a selected text \nI am also not selected."
-        );
+        let text_expectation =
+            String::from("I am not selected. \n# I'm a selected text \nI am also not selected.");
         let start_index_expectation = 22;
         let end_index_expectation = 22;
 
@@ -184,17 +176,15 @@ mod tests {
 
     #[test]
     fn test_insert_heading_with_one_selected_word() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nI'm not :("),
             Some(String::from("selected ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let text_expectation = String::from(
-            "# I'm a selected text \nI'm not :("
-        );
+        let text_expectation = String::from("# I'm a selected text \nI'm not :(");
         let start_index_expectation = 8;
         let end_index_expectation = 17;
 
@@ -205,17 +195,15 @@ mod tests {
 
     #[test]
     fn test_insert_heading_with_one_selected_line() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text"),
             Some(String::from("I'm a selected text")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let text_expectation = String::from(
-            "# I'm a selected text"
-        );
+        let text_expectation = String::from("# I'm a selected text");
         let start_index_expectation = 0;
         let end_index_expectation = 21;
 
@@ -226,17 +214,15 @@ mod tests {
 
     #[test]
     fn test_insert_heading_with_two_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nMe too!"),
-            Some(String::from("I'm a selected text \nMe too!")),  
+            Some(String::from("I'm a selected text \nMe too!")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let text_expectation = String::from(
-            "# I'm a selected text \n# Me too!"
-        );
+        let text_expectation = String::from("# I'm a selected text \n# Me too!");
         let start_index_expectation = 0;
         let end_index_expectation = 32;
 
@@ -247,16 +233,18 @@ mod tests {
 
     #[test]
     fn test_insert_heading_with_surrounded_two_selected_lines() {
-
         let selection = Selection::new_with_text(
-            String::from("I am not selected. \nI'm a selected text \nMe too! \nI am also not selected."),
+            String::from(
+                "I am not selected. \nI'm a selected text \nMe too! \nI am also not selected.",
+            ),
             Some(String::from("I'm a selected text \nMe too! ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
         let text_expectation = String::from(
-            "I am not selected. \n# I'm a selected text \n# Me too! \nI am also not selected."
+            "I am not selected. \n# I'm a selected text \n# Me too! \nI am also not selected.",
         );
         let start_index_expectation = 20;
         let end_index_expectation = 53;
@@ -268,17 +256,12 @@ mod tests {
 
     #[test]
     fn test_handle_already_existing_heading_one() {
+        let selection = Selection::new_with_caret_position(String::from("# Heading"), 9);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("# Heading"),
-            9
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
-
-        let text_expectation = String::from(
-            "## Heading"
-        );
+        let text_expectation = String::from("## Heading");
         let start_index_expectation = 10;
         let end_index_expectation = 10;
 
@@ -289,17 +272,12 @@ mod tests {
 
     #[test]
     fn test_handle_already_existing_heading_two() {
+        let selection = Selection::new_with_caret_position(String::from("## Heading"), 10);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("## Heading"),
-            10
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
-
-        let text_expectation = String::from(
-            "### Heading"
-        );
+        let text_expectation = String::from("### Heading");
         let start_index_expectation = 11;
         let end_index_expectation = 11;
 
@@ -310,17 +288,12 @@ mod tests {
 
     #[test]
     fn test_handle_already_existing_heading_three() {
+        let selection = Selection::new_with_caret_position(String::from("### Heading"), 11);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("### Heading"),
-            11
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
-
-        let text_expectation = String::from(
-            "#### Heading"
-        );
+        let text_expectation = String::from("#### Heading");
         let start_index_expectation = 12;
         let end_index_expectation = 12;
 
@@ -331,17 +304,12 @@ mod tests {
 
     #[test]
     fn test_handle_already_existing_heading_four() {
+        let selection = Selection::new_with_caret_position(String::from("#### Heading"), 12);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("#### Heading"),
-            12
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
-
-        let text_expectation = String::from(
-            "##### Heading"
-        );
+        let text_expectation = String::from("##### Heading");
         let start_index_expectation = 13;
         let end_index_expectation = 13;
 
@@ -352,17 +320,12 @@ mod tests {
 
     #[test]
     fn test_handle_already_existing_heading_five() {
+        let selection = Selection::new_with_caret_position(String::from("##### Heading"), 13);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("##### Heading"),
-            13
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            Heading::new(&selection).format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = Heading::new(&selection).format();
-
-        let text_expectation = String::from(
-            "# Heading"
-        );
+        let text_expectation = String::from("# Heading");
         let start_index_expectation = 9;
         let end_index_expectation = 9;
 

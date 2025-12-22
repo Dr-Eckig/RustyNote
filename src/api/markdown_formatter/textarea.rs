@@ -3,7 +3,6 @@ use web_sys::HtmlTextAreaElement;
 
 use crate::api::markdown_formatter::combine_text_slices;
 
-
 fn get_textarea() -> HtmlTextAreaElement {
     web_sys::window()
         .and_then(|win| win.document())
@@ -35,11 +34,10 @@ pub struct Selection {
     pub before_selection: String,
     pub after_selection: String,
     pub start_index: usize,
-    pub end_index: usize
+    pub end_index: usize,
 }
 
 impl Selection {
-
     pub(crate) fn new(textarea_value: String, start: usize, end: usize) -> Self {
         let selected_text = if end == start {
             None
@@ -50,7 +48,14 @@ impl Selection {
         let before_selection = textarea_value[..start].to_string();
         let after_selection = textarea_value[end..].to_string();
 
-        Selection { textarea_value, selected_text, before_selection, after_selection, start_index: start, end_index: end }
+        Selection {
+            textarea_value,
+            selected_text,
+            before_selection,
+            after_selection,
+            start_index: start,
+            end_index: end,
+        }
     }
 
     #[allow(dead_code)]
@@ -58,7 +63,14 @@ impl Selection {
         let before_selection = textarea_value[..caret_position].to_string();
         let after_selection = textarea_value[caret_position..].to_string();
 
-        Selection { textarea_value, selected_text: None, before_selection, after_selection, start_index: caret_position, end_index: caret_position }
+        Selection {
+            textarea_value,
+            selected_text: None,
+            before_selection,
+            after_selection,
+            start_index: caret_position,
+            end_index: caret_position,
+        }
     }
 
     #[cfg(test)]
@@ -192,8 +204,14 @@ impl Selection {
     /// assert_eq!(selection.current_line(), "second");
     /// ```
     pub fn current_line(&self) -> &str {
-        let start = crate::api::markdown_formatter::textarea::line_start_at(&self.textarea_value, self.start_index);
-        let end = crate::api::markdown_formatter::textarea::line_end_at(&self.textarea_value, self.start_index);
+        let start = crate::api::markdown_formatter::textarea::line_start_at(
+            &self.textarea_value,
+            self.start_index,
+        );
+        let end = crate::api::markdown_formatter::textarea::line_end_at(
+            &self.textarea_value,
+            self.start_index,
+        );
         &self.textarea_value[start..end]
     }
 
@@ -263,14 +281,14 @@ impl Selection {
     /// ```
     pub fn replace_range(&self, start: usize, end: usize, replacement: &str) -> String {
         let string_capacity = self.textarea_value.len() + replacement.len();
-        
+
         combine_text_slices(
             vec![
-                &self.textarea_value[..start], 
-                replacement, 
-                &self.textarea_value[end..]
-            ], 
-            string_capacity
+                &self.textarea_value[..start],
+                replacement,
+                &self.textarea_value[end..],
+            ],
+            string_capacity,
         )
     }
 
@@ -308,11 +326,15 @@ impl Selection {
 pub(crate) fn get_current_selection() -> Selection {
     let textarea = get_textarea();
     let textarea_value = textarea.value();
-    
+
     // Browser APIs return character positions, convert to byte positions
     let start_char_pos = textarea.selection_start().ok().flatten().unwrap_or(0) as usize;
-    let end_char_pos = textarea.selection_end().ok().flatten().unwrap_or(start_char_pos as u32) as usize;
-    
+    let end_char_pos = textarea
+        .selection_end()
+        .ok()
+        .flatten()
+        .unwrap_or(start_char_pos as u32) as usize;
+
     let start_byte_pos = char_to_byte_pos_safe(&textarea_value, start_char_pos);
     let end_byte_pos = char_to_byte_pos_safe(&textarea_value, end_char_pos);
 
@@ -330,20 +352,24 @@ pub(crate) fn get_current_selection() -> Selection {
 /// // Requires a browser environment.
 /// set_cursor("Hello".into(), 0, 0);
 /// ```
-pub(crate) fn set_cursor(new_value: String, new_sel_start_byte: u32, new_sel_end_byte: u32) -> String {
+pub(crate) fn set_cursor(
+    new_value: String,
+    new_sel_start_byte: u32,
+    new_sel_end_byte: u32,
+) -> String {
     let textarea = get_textarea();
-    
+
     textarea.set_value(&new_value);
 
     // Convert byte positions to character positions for browser APIs
     let new_sel_start_char = byte_to_char_pos(&new_value, new_sel_start_byte as usize) as u32;
     let new_sel_end_char = byte_to_char_pos(&new_value, new_sel_end_byte as usize) as u32;
-    
+
     // Clamp to valid character positions
     let max_char_pos = new_value.chars().count() as u32;
     let clamped_start = new_sel_start_char.min(max_char_pos);
     let clamped_end = new_sel_end_char.min(max_char_pos);
-    
+
     textarea.set_selection_start(Some(clamped_start)).ok();
     textarea.set_selection_end(Some(clamped_end)).ok();
     textarea.focus().ok();
@@ -370,7 +396,10 @@ pub fn line_start_at(value: &str, idx: usize) -> usize {
 /// assert_eq!(line_end_at("a\nb", 0), 1);
 /// ```
 pub fn line_end_at(value: &str, idx: usize) -> usize {
-    value[idx..].find('\n').map(|p| idx + p).unwrap_or(value.len())
+    value[idx..]
+        .find('\n')
+        .map(|p| idx + p)
+        .unwrap_or(value.len())
 }
 
 /// Converts a character position to a byte position in a UTF-8 string.

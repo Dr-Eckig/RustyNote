@@ -1,5 +1,5 @@
-use crate::api::markdown_formatter::textarea::Selection;
 use super::SelectionFormatter;
+use crate::api::markdown_formatter::textarea::Selection;
 
 /// Formatter that toggles a prefix at the beginning of each selected line.
 ///
@@ -36,7 +36,8 @@ impl<'a> BlockPrefix<'a> {
         let (block_start, block_end) = sel.line_bounds();
         let lines: Vec<String> = sel.selected_lines().iter().map(|s| s.to_string()).collect();
 
-        let already_prefixed = self.all_lines_have_prefix(&lines.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
+        let already_prefixed =
+            self.all_lines_have_prefix(&lines.iter().map(|s| s.as_str()).collect::<Vec<&str>>());
         let new_lines: Vec<String> = if already_prefixed {
             self.remove_prefix(&lines.iter().map(|s| s.as_str()).collect::<Vec<&str>>())
         } else {
@@ -77,7 +78,9 @@ impl<'a> BlockPrefix<'a> {
     }
 
     fn all_lines_have_prefix(&self, lines: &[&str]) -> bool {
-        lines.iter().all(|l| l.trim_start().starts_with(self.prefix))
+        lines
+            .iter()
+            .all(|l| l.trim_start().starts_with(self.prefix))
     }
 
     fn adjust_line_prefix(&self, line: &str, add: bool) -> String {
@@ -94,11 +97,17 @@ impl<'a> BlockPrefix<'a> {
     }
 
     fn add_prefix(&self, lines: &[&str]) -> Vec<String> {
-        lines.iter().map(|l| self.adjust_line_prefix(l, true)).collect()
+        lines
+            .iter()
+            .map(|l| self.adjust_line_prefix(l, true))
+            .collect()
     }
 
     fn remove_prefix(&self, lines: &[&str]) -> Vec<String> {
-        lines.iter().map(|l| self.adjust_line_prefix(l, false)).collect()
+        lines
+            .iter()
+            .map(|l| self.adjust_line_prefix(l, false))
+            .collect()
     }
 }
 
@@ -115,17 +124,12 @@ mod tests {
 
     #[test]
     fn test_insert_block_prefix_simple() {
+        let selection = Selection::new_with_caret_position(String::new(), 0);
 
-        let selection = Selection::new_with_caret_position(
-            String::new(),
-            0,
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
-
-        let text_expectation = String::from(
-            "- "
-        );
+        let text_expectation = String::from("- ");
         let start_index_expectation = 2;
         let end_index_expectation = 2;
 
@@ -136,17 +140,15 @@ mod tests {
 
     #[test]
     fn test_insert_block_prefix_with_caret_in_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I'm a selected text \nI'm not :("),
             10,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
-        let text_expectation = String::from(
-            "- I'm a selected text \nI'm not :("
-        );
+        let text_expectation = String::from("- I'm a selected text \nI'm not :(");
         let start_index_expectation = 12;
         let end_index_expectation = 12;
 
@@ -157,17 +159,16 @@ mod tests {
 
     #[test]
     fn test_insert_block_prefix_with_caret_in_surrounded_line() {
-
         let selection = Selection::new_with_caret_position(
             String::from("I am not selected. \nI'm a selected text \nI am also not selected."),
             20,
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
-        let text_expectation = String::from(
-            "I am not selected. \n- I'm a selected text \nI am also not selected."
-        );
+        let text_expectation =
+            String::from("I am not selected. \n- I'm a selected text \nI am also not selected.");
         let start_index_expectation = 22;
         let end_index_expectation = 22;
 
@@ -178,17 +179,15 @@ mod tests {
 
     #[test]
     fn test_insert_block_prefix_with_one_selected_word() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nI'm not :("),
             Some(String::from("selected ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
-        let text_expectation = String::from(
-            "- I'm a selected text \nI'm not :("
-        );
+        let text_expectation = String::from("- I'm a selected text \nI'm not :(");
         let start_index_expectation = 8;
         let end_index_expectation = 17;
 
@@ -199,17 +198,15 @@ mod tests {
 
     #[test]
     fn test_insert_block_prefix_with_one_selected_line() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text"),
             Some(String::from("I'm a selected text")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
-        let text_expectation = String::from(
-            "- I'm a selected text"
-        );
+        let text_expectation = String::from("- I'm a selected text");
         let start_index_expectation = 2;
         let end_index_expectation = 21;
 
@@ -220,17 +217,15 @@ mod tests {
 
     #[test]
     fn test_insert_block_prefix_with_two_selected_lines() {
-
         let selection = Selection::new_with_text(
             String::from("I'm a selected text \nMe too!"),
-            Some(String::from("I'm a selected text \nMe too!")),  
+            Some(String::from("I'm a selected text \nMe too!")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
-        let text_expectation = String::from(
-            "- I'm a selected text \n- Me too!"
-        );
+        let text_expectation = String::from("- I'm a selected text \n- Me too!");
         let start_index_expectation = 0;
         let end_index_expectation = 32;
 
@@ -241,16 +236,18 @@ mod tests {
 
     #[test]
     fn test_insert_block_prefix_with_surrounded_two_selected_lines() {
-
         let selection = Selection::new_with_text(
-            String::from("I am not selected. \nI'm a selected text \nMe too! \nI am also not selected."),
+            String::from(
+                "I am not selected. \nI'm a selected text \nMe too! \nI am also not selected.",
+            ),
             Some(String::from("I'm a selected text \nMe too! ")),
         );
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
         let text_expectation = String::from(
-            "I am not selected. \n- I'm a selected text \n- Me too! \nI am also not selected."
+            "I am not selected. \n- I'm a selected text \n- Me too! \nI am also not selected.",
         );
         let start_index_expectation = 20;
         let end_index_expectation = 53;
@@ -262,17 +259,12 @@ mod tests {
 
     #[test]
     fn test_remove_block_prefix_simple() {
+        let selection = Selection::new_with_caret_position(String::from("- Unordered List"), 16);
 
-        let selection = Selection::new_with_caret_position(
-            String::from("- Unordered List"),
-            16
-        );
+        let (formatted_text, caret_start_index, caret_end_index) =
+            BlockPrefix::new(&selection, "- ").format();
 
-        let (formatted_text, caret_start_index, caret_end_index) = BlockPrefix::new(&selection, "- ").format();
-
-        let text_expectation = String::from(
-            "Unordered List"
-        );
+        let text_expectation = String::from("Unordered List");
         let start_index_expectation = 14;
         let end_index_expectation = 14;
 

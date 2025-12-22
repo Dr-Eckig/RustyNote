@@ -4,14 +4,13 @@ use crate::api::parser::Dialect;
 
 #[component]
 pub fn RustyNoteDoc() -> impl IntoView {
-
     let parsed_doc = Dialect::GitHub.parse_markdown_to_html(RUSTYNOTE_DOC);
 
     view! {
         <div class="content with-cropped-images">
-            <div  
+            <div
                 inner_html=parsed_doc
-            /> 
+            />
         </div>
     }
 }

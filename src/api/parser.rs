@@ -1,6 +1,6 @@
 use std::{fmt, str::FromStr};
 
-use comrak::{markdown_to_html, ComrakOptions, ExtensionOptions, ParseOptions, RenderOptions};
+use comrak::{ComrakOptions, ExtensionOptions, ParseOptions, RenderOptions, markdown_to_html};
 
 /// Selects which markdown dialect should be used for parsing.
 #[derive(PartialEq, Clone, Debug, Default)]
@@ -20,12 +20,11 @@ impl Dialect {
     /// assert!(html.contains("<h1>Title</h1>"));
     /// ```
     pub fn parse_markdown_to_html(&self, input: &str) -> String {
-        
         match self {
             Self::Common => {
                 let options = ComrakOptions::default();
                 markdown_to_html(input, &options)
-            },
+            }
             Self::GitHub => {
                 let options = ComrakOptions {
                     extension: ExtensionOptions {
@@ -47,24 +46,26 @@ impl Dialect {
                 };
 
                 markdown_to_html(input, &options)
-                
-
-            },
+            }
         }
     }
 }
 
 impl fmt::Display for Dialect {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", match self {
-            Dialect::Common => "Common",
-            Dialect::GitHub => "GitHub",
-        })
+        write!(
+            f,
+            "{}",
+            match self {
+                Dialect::Common => "Common",
+                Dialect::GitHub => "GitHub",
+            }
+        )
     }
 }
 
 impl FromStr for Dialect {
-    type Err = (); 
+    type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
@@ -74,6 +75,3 @@ impl FromStr for Dialect {
         }
     }
 }
-
-
-

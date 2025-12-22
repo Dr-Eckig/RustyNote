@@ -1,4 +1,8 @@
-use leptos::{ev::keydown, prelude::{RwSignal, Set}, *};
+use leptos::{
+    ev::keydown,
+    prelude::{RwSignal, Set},
+    *,
+};
 use leptos_use::{use_document, use_event_listener};
 use web_sys::KeyboardEvent;
 
@@ -32,10 +36,26 @@ pub fn setup_shortcuts(markdown: RwSignal<String>) {
             if shortcut.matches(&ev) {
                 ev.prevent_default();
                 match action {
-                    ShortcutKey::Bold => markdown.set(TextFormattingType::Inline { prefix: "**", suffix: "**" }.apply_text_formatting()),
-                    ShortcutKey::Heading => markdown.set(TextFormattingType::Heading.apply_text_formatting()),
-                    ShortcutKey::CodeBlock => markdown.set(TextFormattingType::CodeBlock.apply_text_formatting()),
-                    ShortcutKey::Monospace => markdown.set(TextFormattingType::Inline { prefix: "`", suffix: "`" }.apply_text_formatting()),
+                    ShortcutKey::Bold => markdown.set(
+                        TextFormattingType::Inline {
+                            prefix: "**",
+                            suffix: "**",
+                        }
+                        .apply_text_formatting(),
+                    ),
+                    ShortcutKey::Heading => {
+                        markdown.set(TextFormattingType::Heading.apply_text_formatting())
+                    }
+                    ShortcutKey::CodeBlock => {
+                        markdown.set(TextFormattingType::CodeBlock.apply_text_formatting())
+                    }
+                    ShortcutKey::Monospace => markdown.set(
+                        TextFormattingType::Inline {
+                            prefix: "`",
+                            suffix: "`",
+                        }
+                        .apply_text_formatting(),
+                    ),
                 }
                 break;
             }
@@ -60,20 +80,34 @@ struct Shortcut {
 
 impl Shortcut {
     const fn new(key: &'static str, ctrl: bool, alt: bool, shift: bool) -> Self {
-        Self { key, ctrl, alt, shift }
+        Self {
+            key,
+            ctrl,
+            alt,
+            shift,
+        }
     }
 
     fn matches(&self, event: &KeyboardEvent) -> bool {
-        event.key() == self.key &&
-        event.ctrl_key() == self.ctrl &&
-        event.alt_key() == self.alt &&
-        event.shift_key() == self.shift
+        event.key() == self.key
+            && event.ctrl_key() == self.ctrl
+            && event.alt_key() == self.alt
+            && event.shift_key() == self.shift
     }
 }
 
 const SHORTCUTS: &[(&Shortcut, ShortcutKey)] = &[
     (&Shortcut::new("b", true, false, false), ShortcutKey::Bold),
-    (&Shortcut::new("h", true, false, false), ShortcutKey::Heading),
-    (&Shortcut::new("#", true, false, false), ShortcutKey::CodeBlock),
-    (&Shortcut::new("m", true, false, false), ShortcutKey::Monospace),
+    (
+        &Shortcut::new("h", true, false, false),
+        ShortcutKey::Heading,
+    ),
+    (
+        &Shortcut::new("#", true, false, false),
+        ShortcutKey::CodeBlock,
+    ),
+    (
+        &Shortcut::new("m", true, false, false),
+        ShortcutKey::Monospace,
+    ),
 ];

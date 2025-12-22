@@ -10,14 +10,10 @@ pub struct Tab {
 }
 
 #[component]
-pub fn Tabs(
-    active_tab: RwSignal<usize>,
-    #[prop(into)] tabs: Signal<Vec<Tab>>,
-) -> impl IntoView {
-
+pub fn Tabs(active_tab: RwSignal<usize>, #[prop(into)] tabs: Signal<Vec<Tab>>) -> impl IntoView {
     let is_mobile = use_media_query("(max-width: 768px)");
     let show_text = Signal::derive(move || !is_mobile.get());
-    
+
     view! {
         <div class="tabs is-toggle is-fullwidth">
             <ul>
@@ -26,7 +22,7 @@ pub fn Tabs(
                     key=|(_, tab)| tab.name.clone()
                     children=move |(index, tab)| {
                         let is_active = move || active_tab.get() == index;
-                        
+
                         view! {
                             <li class:is-active=is_active>
                                 <a on:click=move |_| active_tab.set(index)>
