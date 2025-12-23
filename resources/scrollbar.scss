@@ -19,6 +19,7 @@
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
  background-color: var(--bulma-grey-lighter);
  border-radius: 6px;
+ cursor: pointer;
 }
 
 ::-webkit-scrollbar-thumb:hover {
