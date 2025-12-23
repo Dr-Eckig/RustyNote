@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use markdown::App;
+use rustynote::App;
 
 pub fn main() {
     console_error_panic_hook::set_once();
