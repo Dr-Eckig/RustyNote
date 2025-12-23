@@ -13,6 +13,7 @@ https://dr-eckig.github.io/RustyNote/
 - GitHub-Flavored Markdown (GFM) support
 - Copy and downloading the markdown content
 - Theme switcher (light-/ darkmode)
+- Responsive design for desktop, tablet and mobile
 - Integrated documentation
 
 ## Setup
