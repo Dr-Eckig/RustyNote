@@ -16,7 +16,6 @@ pub fn Tabs(active_tab: RwSignal<usize>, #[prop(into)] tabs: Signal<Vec<Tab>>) -
 
     view! {
         <div class="tabs is-toggle is-fullwidth">
-            <ul>
                 <For
                     each=move || tabs.get().into_iter().enumerate()
                     key=|(_, tab)| tab.name.clone()
@@ -25,19 +24,20 @@ pub fn Tabs(active_tab: RwSignal<usize>, #[prop(into)] tabs: Signal<Vec<Tab>>) -
 
                         view! {
                             <li class:is-active=is_active>
-                                <a on:click=move |_| active_tab.set(index)>
+                                <button class="button is-fullwidth" 
+                                    on:click=move |_| active_tab.set(index)
+                                >
                                     <span class="icon is-small">
                                         <i class=tab.icon.as_fontawesome() aria-hidden="true"></i>
                                     </span>
                                     <Show when=move || show_text.get()>
                                         <span>{tab.name.clone()}</span>
                                     </Show>
-                                </a>
+                                </button>
                             </li>
                         }
                     }
                 />
-            </ul>
         </div>
     }
 }
