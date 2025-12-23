@@ -36,7 +36,7 @@ pub fn WriteSection(
 
     view! {
         <MobileSidebar markdown parser sidebar_open=mobile_sidebar_open />
-        <div class="column is-narrow is-invisible is-hidden-mobile">
+        <div class="column is-narrow is-hidden is-hidden-mobile">
             <LineColumn markdown scroll=scroll.read_only() />
         </div>
         <div

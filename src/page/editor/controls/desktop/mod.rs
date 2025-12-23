@@ -17,7 +17,7 @@ pub fn DesktopControls(
     mode: RwSignal<Mode>,
 ) -> impl IntoView {
     view! {
-        <div class="controls-container is-flex is-justify-content-space-between is-hidden-touch pt-3 px-0">
+        <div class="is-flex is-justify-content-space-between is-hidden-touch pt-3 px-5">
             <EditTextButtons markdown parser mode />
             <ActionButtons markdown />
         </div>

@@ -16,7 +16,7 @@ pub fn TabletControls(
     mode: RwSignal<Mode>,
 ) -> impl IntoView {
     view! {
-        <div class="controls-container is-hidden-desktop is-hidden-mobile">
+        <div class="is-hidden-desktop is-hidden-mobile px-5">
             <div class="is-flex is-justify-content-end py-3">
                 <FormatTablesButton markdown tooltip_direction=TooltipDirection::Right />
             </div>

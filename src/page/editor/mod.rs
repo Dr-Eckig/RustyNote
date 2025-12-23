@@ -30,14 +30,14 @@ pub fn MarkdownEditor(
         }
     });
 
-    let is_mobile = use_media_query("(max-width: 768px)");
+    // let is_mobile = use_media_query("(max-width: 768px)");
 
     view! {
         <Controls markdown parser sidebar_open=mobile_sidebar_open mode />
 
         <main
-            class="columns is-mobile is-flex-grow-1 px-0 m-0" style="overflow: hidden;"
-            class:px-5=move || is_mobile.get()
+            class="columns is-mobile is-flex-grow-1 px-5 m-0" style="overflow: hidden;"
+            // class:px-5=move || is_mobile.get()
         >
             <div
                 class="column is-narrow is-hidden-mobile"
@@ -58,7 +58,7 @@ pub fn MarkdownEditor(
                 }
             )}
 
-            <div class="column is-narrow is-hidden-mobile">
+            <div class="column is-narrow is-hidden-mobile is-hidden">
                 <div class="line-counter" />
             </div>
         </main>
