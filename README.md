@@ -12,7 +12,6 @@ https://dr-eckig.github.io/RustyNote/
 - Markdown formatting buttons and shortcuts
 - GitHub-Flavored Markdown (GFM) support
 - Copy and downloading the markdown content
-- Line numbers in the editor
 - Theme switcher (light-/ darkmode)
 - Integrated documentation
 
